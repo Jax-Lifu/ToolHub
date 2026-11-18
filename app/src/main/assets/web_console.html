@@ -1,0 +1,2062 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="light dark" name="color-scheme">
+    <title>ToolHub Web 控制台 - {{MODEL}}</title>
+    <style>
+        :root {
+          --bg-light: #f8fafc;
+          --bg-dark: #0b1120;
+          --surface-light: #ffffff;
+          --surface-dark: #151e32;
+          --surface-alt-light: #f1f5f9;
+          --surface-alt-dark: #1e293b;
+          --border-light: #cbd5e1;
+          --border-dark: #334155;
+          --text-light: #0f172a;
+          --text-dark: #f1f5f9;
+          --muted-light: #475569;
+          --muted-dark: #94a3b8;
+          --accent-light: #2563eb;
+          --accent-dark: #3b82f6;
+          --green-light: #15803d;
+          --green-dark: #4ade80;
+          --red-light: #dc2626;
+          --red-dark: #f87171;
+          --amber-light: #b45309;
+          --amber-dark: #fbbf24;
+
+          --bg: var(--bg-light);
+          --surface: var(--surface-light);
+          --surface-alt: var(--surface-alt-light);
+          --border: var(--border-light);
+          --text: var(--text-light);
+          --muted: var(--muted-light);
+          --accent: var(--accent-light);
+          --green: var(--green-light);
+          --red: var(--red-light);
+          --amber: var(--amber-light);
+          --scrollbar-track: #e2e8f0;
+          --scrollbar-thumb: #94a3b8;
+
+          color-scheme: light dark;
+          accent-color: var(--accent);
+          scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+        }
+
+        @media (prefers-color-scheme: dark) {
+          :root {
+            --bg: var(--bg-dark);
+            --surface: var(--surface-dark);
+            --surface-alt: var(--surface-alt-dark);
+            --border: var(--border-dark);
+            --text: var(--text-dark);
+            --muted: var(--muted-dark);
+            --accent: var(--accent-dark);
+            --green: var(--green-dark);
+            --red: var(--red-dark);
+            --amber: var(--amber-dark);
+            --scrollbar-track: #1e293b;
+            --scrollbar-thumb: #64748b;
+          }
+        }
+
+        @supports (color: light-dark(white, black)) {
+          :root {
+            --bg: light-dark(var(--bg-light), var(--bg-dark));
+            --surface: light-dark(var(--surface-light), var(--surface-dark));
+            --surface-alt: light-dark(var(--surface-alt-light), var(--surface-alt-dark));
+            --border: light-dark(var(--border-light), var(--border-dark));
+            --text: light-dark(var(--text-light), var(--text-dark));
+            --muted: light-dark(var(--muted-light), var(--muted-dark));
+            --accent: light-dark(var(--accent-light), var(--accent-dark));
+            --green: light-dark(var(--green-light), var(--green-dark));
+            --red: light-dark(var(--red-light), var(--red-dark));
+            --amber: light-dark(var(--amber-light), var(--amber-dark));
+            --scrollbar-track: light-dark(#e2e8f0, #1e293b);
+            --scrollbar-thumb: light-dark(#94a3b8, #64748b);
+          }
+        }
+
+        @supports not (scrollbar-color: auto) {
+          .scroller::-webkit-scrollbar { width: 10px; height: 10px; }
+          .scroller::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 5px; }
+          .scroller::-webkit-scrollbar-track { background: var(--scrollbar-track); }
+        }
+
+        * { box-sizing: border-box; }
+        body {
+          margin: 0;
+          font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+          background: var(--bg);
+          color: var(--text);
+          line-height: 1.5;
+        }
+
+        /* Fluid full-screen adaptive container */
+        .app-shell {
+          width: min(1760px, 100%);
+          margin: 0 auto;
+          padding: clamp(12px, 1.8vw, 28px);
+        }
+
+        header.topbar {
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: space-between;
+          align-items: center;
+          gap: 12px;
+          padding-bottom: 12px;
+          border-bottom: 1px solid var(--border);
+          margin-bottom: 12px;
+        }
+
+        .brand h1 {
+          margin: 0;
+          font-size: clamp(1.1rem, 0.95rem + 0.5vw, 1.45rem);
+          display: flex;
+          flex-wrap: wrap;
+          align-items: center;
+          gap: 8px;
+        }
+        .brand .sub {
+          color: var(--muted);
+          font-size: 0.82rem;
+          margin-top: 2px;
+        }
+
+        .top-actions {
+          display: flex;
+          flex-wrap: wrap;
+          align-items: center;
+          gap: 8px;
+        }
+
+        /* Accessible single-row horizontal scroll tabs */
+        .tablist {
+          display: flex;
+          gap: 4px;
+          overflow-x: auto;
+          border-bottom: 1px solid var(--border);
+          margin-bottom: 18px;
+          scrollbar-width: none;
+        }
+        .tablist::-webkit-scrollbar { display: none; }
+
+        .tablist button[role="tab"] {
+          position: relative;
+          flex: none;
+          background: transparent;
+          border: none;
+          color: var(--muted);
+          padding: 10px 16px;
+          font-size: 0.92rem;
+          font-weight: 600;
+          cursor: pointer;
+          white-space: nowrap;
+        }
+        .tablist button[role="tab"]:hover { color: var(--text); }
+        .tablist button[role="tab"][aria-selected="true"] { color: var(--accent); }
+        .tablist button[role="tab"][aria-selected="true"]::after {
+          content: "";
+          position: absolute;
+          inset: auto 0 0;
+          border-block-end: 3px solid var(--accent);
+        }
+
+        .panel-inner {
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+          container-type: inline-size;
+        }
+
+        /* Responsive adaptive grids using CSS Grid + Container Queries */
+        .grid-main {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 14px;
+        }
+        @container (width >= 680px) {
+          .grid-main { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        }
+        @container (width >= 1120px) {
+          .grid-main { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        }
+
+        .grid-2 {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 14px;
+        }
+        @container (width >= 760px) {
+          .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        }
+
+        .grid-4 {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+          gap: 12px;
+        }
+
+        .card {
+          min-inline-size: 0;
+          overflow: hidden;
+          background: var(--surface);
+          border: 1px solid var(--border);
+          border-radius: 12px;
+          padding: clamp(12px, 1.4vw, 18px);
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+        }
+        .card-head {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+          gap: 8px;
+        }
+        .card-title {
+          margin: 0;
+          font-size: 1rem;
+          font-weight: 700;
+        }
+        .card-sub {
+          font-size: 0.8rem;
+          color: var(--muted);
+          overflow-wrap: anywhere;
+        }
+
+        .pill {
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
+          padding: 2px 10px;
+          border-radius: 999px;
+          font-size: 0.76rem;
+          font-weight: 600;
+          border: 1px solid var(--border);
+          background: var(--surface-alt);
+          white-space: nowrap;
+        }
+        .pill.ok { color: var(--green); border-color: color-mix(in srgb, var(--green) 45%, transparent); }
+        .pill.danger { color: var(--red); border-color: color-mix(in srgb, var(--red) 45%, transparent); }
+        .pill.warn { color: var(--amber); border-color: color-mix(in srgb, var(--amber) 45%, transparent); }
+        .pill.accent { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 45%, transparent); }
+
+        .btn {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 6px;
+          padding: 6px 12px;
+          border-radius: 8px;
+          font-size: 0.84rem;
+          font-weight: 600;
+          border: 1px solid var(--border);
+          background: var(--surface-alt);
+          color: var(--text);
+          cursor: pointer;
+          text-decoration: none;
+          min-height: 36px;
+        }
+        .btn.sm { min-height: 28px; padding: 3px 9px; font-size: 0.76rem; }
+        .btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+        .btn.primary:hover:not(:disabled) { opacity: 0.92; color: #fff; }
+        .btn.danger { background: var(--red); border-color: var(--red); color: #fff; }
+        .btn.danger:hover:not(:disabled) { opacity: 0.92; color: #fff; }
+        .btn.active-mode { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+        .btn-group {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 8px;
+        }
+
+        .switch-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 6px 0;
+          border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+          gap: 12px;
+        }
+        .switch-row:last-child { border-bottom: none; }
+        .switch-row > div { min-inline-size: 0; flex: 1; }
+        .switch-label { font-size: 0.88rem; font-weight: 500; }
+        .switch-desc { font-size: 0.76rem; color: var(--muted); overflow-wrap: anywhere; }
+        input[type="checkbox"].toggle {
+          width: 40px;
+          height: 22px;
+          cursor: pointer;
+          flex-shrink: 0;
+        }
+
+        .kv-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: baseline;
+          gap: 10px;
+          padding: 5px 0;
+          border-bottom: 1px solid color-mix(in srgb, var(--border) 45%, transparent);
+          font-size: 0.84rem;
+        }
+        .kv-row:last-child { border-bottom: none; }
+        .kv-k { color: var(--muted); flex-shrink: 0; }
+        .kv-v { font-weight: 600; text-align: right; min-inline-size: 0; overflow-wrap: anywhere; }
+
+        .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; overflow-wrap: anywhere; }
+
+        .sub-box {
+          background: var(--surface-alt);
+          border: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+          border-radius: 8px;
+          padding: 8px 10px;
+          font-size: 0.78rem;
+          overflow-wrap: anywhere;
+        }
+
+        /* Terminal / Pre blocks */
+        pre, code.terminal {
+          color-scheme: dark;
+          background: #090e1a;
+          color: #e2e8f0;
+          border: 1px solid #334155;
+          border-radius: 8px;
+          padding: 12px;
+          font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+          font-size: 0.8rem;
+          line-height: 1.5;
+          overflow-x: auto;
+          white-space: pre-wrap;
+          word-break: break-word;
+          margin: 0;
+        }
+
+        /* Responsive Table using container query & dvh */
+        .table-wrapper {
+          overflow: auto;
+          max-inline-size: 100%;
+          max-block-size: min(460px, 65dvh);
+          container-type: inline-size;
+          border: 1px solid var(--border);
+          border-radius: 8px;
+        }
+        table {
+          width: 100%;
+          border-collapse: separate;
+          border-spacing: 0;
+          font-size: 0.84rem;
+        }
+        thead {
+          position: sticky;
+          inset-block-start: 0;
+          z-index: 1;
+          background: var(--surface-alt);
+        }
+        th, td {
+          text-align: left;
+          padding: 9px 12px;
+          border-bottom: 1px solid var(--border);
+        }
+        th { color: var(--muted); font-weight: 600; font-size: 0.78rem; }
+
+        @container (width < 580px) {
+          table, thead, tbody, tr, th, td { display: block; }
+          thead { display: none; }
+          tr {
+            margin-block-end: 10px;
+            border-bottom: 2px solid var(--border);
+            padding: 6px 0;
+          }
+          td { border-bottom: none; padding: 4px 12px; }
+          td[data-label]::before {
+            content: attr(data-label) ": ";
+            font-weight: 600;
+            color: var(--muted);
+          }
+        }
+
+        /* Chart SVG */
+        .chart-box {
+          width: 100%;
+          height: 140px;
+          background: var(--surface-alt);
+          border-radius: 8px;
+          border: 1px solid var(--border);
+          overflow: hidden;
+        }
+        .chart-box.tall { height: 210px; }
+        .metric-big {
+          font-size: clamp(1.2rem, 1rem + 0.8vw, 1.7rem);
+          font-weight: 800;
+          font-family: ui-monospace, monospace;
+        }
+
+        /* Native Dialog styling */
+        dialog {
+          background: var(--surface);
+          color: var(--text);
+          border: 1px solid var(--border);
+          border-radius: 14px;
+          padding: 20px;
+          max-width: min(880px, 94dvw);
+          width: 100%;
+          box-shadow: 0 20px 48px rgba(0,0,0,0.45);
+        }
+        dialog.narrow { max-width: min(440px, 92dvw); }
+        dialog:modal { overscroll-behavior: contain; }
+        dialog::backdrop {
+          background: rgba(0, 0, 0, 0.58);
+          overflow: hidden;
+          overscroll-behavior: contain;
+        }
+        .dialog-head {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          gap: 10px;
+          margin-bottom: 12px;
+        }
+        .dialog-head h2 { margin: 0; font-size: 1.08rem; }
+        .dialog-body { max-height: 64dvh; overflow: auto; margin-bottom: 14px; }
+        .dialog-actions { display: flex; justify-content: flex-end; gap: 8px; flex-wrap: wrap; }
+
+        .toast {
+          position: fixed;
+          bottom: 20px;
+          right: 20px;
+          background: var(--surface-alt);
+          color: var(--text);
+          border: 1px solid var(--accent);
+          padding: 10px 16px;
+          border-radius: 10px;
+          font-size: 0.86rem;
+          font-weight: 600;
+          box-shadow: 0 8px 24px rgba(0,0,0,0.28);
+          z-index: 9999;
+          display: none;
+        }
+
+        .form-row {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 10px;
+          align-items: center;
+        }
+        .form-row label { font-size: 0.84rem; color: var(--muted); min-width: 72px; }
+        select, input[type="text"] {
+          background: var(--surface-alt);
+          color: var(--text);
+          border: 1px solid var(--border);
+          border-radius: 6px;
+          padding: 6px 10px;
+          font-size: 0.85rem;
+          color: var(--text);
+        }
+        .spinner {
+          display: inline-block;
+          width: 14px;
+          height: 14px;
+          border: 2px solid currentColor;
+          border-right-color: transparent;
+          border-radius: 50%;
+          animation: toolhub-spin 0.75s linear infinite;
+          vertical-align: middle;
+        }
+        @keyframes toolhub-spin {
+          to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+<div class="app-shell">
+    <header class="topbar">
+        <div class="brand">
+            <h1>
+                <span>⚙️ ToolHub Web 控制台</span>
+                <span class="pill ok" id="hdr-stress-badge">就绪</span>
+                <span class="pill accent" id="hdr-br-badge" style="display:none;"><span
+                        class="spinner"></span> <span id="hdr-br-text">收集 Bugreport</span></span>
+                <span class="pill" id="hdr-uid-badge">-</span>
+            </h1>
+            <div class="sub" id="hdr-device-sub">正在连接设备 ({{MODEL}})...</div>
+        </div>
+        <div class="top-actions">
+            <span class="pill" id="hdr-usb-badge">检测存储中...</span>
+            <input aria-label="PIN" id="web-pin-input" maxlength="8" placeholder="PIN" style="width:68px;display:none;" type="text">
+            <select aria-label="Language" id="lang-select">
+                <option value="zh-CN">简体中文</option>
+                <option value="zh-TW">繁體中文</option>
+                <option value="en">English</option>
+                <option value="ja">日本語</option>
+                <option value="ko">한국어</option>
+            </select>
+            <button class="btn" id="btn-copy-adb" type="button">📋 复制 ADB 连接</button>
+            <button class="btn" id="btn-copy-snapshot" type="button">📄 复制诊断快照</button>
+            <button class="btn" id="btn-refresh-all" type="button">🔄 刷新</button>
+            <button class="btn danger" id="btn-open-reboot" type="button">↻ 重启</button>
+        </div>
+    </header>
+
+    <div aria-label="ToolHub 功能导航" class="tablist" role="tablist">
+        <button aria-selected="true" id="tab-overview" role="tab" type="button">总览与设备</button>
+        <button aria-selected="false" id="tab-perf" role="tab" type="button">性能实时曲线</button>
+        <button aria-selected="false" id="tab-thermal" role="tab" type="button">温度与调频</button>
+        <button aria-selected="false" id="tab-stress" role="tab" type="button">压力测试与老化
+        </button>
+        <button aria-selected="false" id="tab-audio" role="tab" type="button">音频与板级节点
+        </button>
+        <button aria-selected="false" id="tab-tools" role="tab" type="button">系统工具</button>
+        <button aria-selected="false" id="tab-reports" role="tab" type="button">报告与崩溃回溯
+        </button>
+    </div>
+
+    <!-- Tab 1: 总览与控制 -->
+    <div aria-labelledby="tab-overview" id="panel-overview" role="tabpanel" tabindex="0">
+        <div class="panel-inner">
+            <div class="grid-main">
+                <section class="card">
+                    <div class="card-head">
+                        <div>
+                            <h2 class="card-title">OTG 模式控制</h2>
+                            <div class="card-sub" id="otg-node-sub">扫描节点中...</div>
+                        </div>
+                        <span class="pill accent" id="otg-mode-pill">-</span>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn" data-otg="OTG" type="button">全部切至 OTG</button>
+                        <button class="btn" data-otg="HOST" type="button">HOST</button>
+                        <button class="btn" data-otg="PERIPHERAL" type="button">PERIPHERAL</button>
+                    </div>
+                    <div id="otg-nodes-list"></div>
+                    <div class="sub-box mono" id="usb-props-box"></div>
+                </section>
+
+                <section class="card">
+                    <div class="card-head">
+                        <div>
+                            <h2 class="card-title">ADB 与系统调试开关</h2>
+                            <div class="card-sub" id="adb-props-sub">sys.usb.config: -</div>
+                        </div>
+                    </div>
+                    <div class="switch-row">
+                        <div>
+                            <div class="switch-label">ADB 总开关 (ADB_ENABLED)</div>
+                            <div class="switch-desc">启用 USB / 网络 ADB 调试通道</div>
+                        </div>
+                        <input aria-label="ADB 总开关" class="toggle" id="sw-adb" type="checkbox">
+                    </div>
+                    <div class="switch-row">
+                        <div>
+                            <div class="switch-label">系统无线调试 (Wi-Fi ADB)</div>
+                            <div class="switch-desc">开启 adb_wifi_enabled</div>
+                        </div>
+                        <input aria-label="系统无线调试" class="toggle" id="sw-wifi-adb"
+                               type="checkbox">
+                    </div>
+                    <div class="switch-row">
+                        <div>
+                            <div class="switch-label">充电/USB 保持屏幕常亮</div>
+                            <div class="switch-desc">STAY_ON_WHILE_PLUGGED_IN</div>
+                        </div>
+                        <input aria-label="保持屏幕常亮" class="toggle" id="sw-stay-awake"
+                               type="checkbox">
+                    </div>
+                    <div class="switch-row">
+                        <div>
+                            <div class="switch-label">开机自动切至 OTG 模式</div>
+                        </div>
+                        <input aria-label="开机自动 OTG" class="toggle" id="sw-boot-otg"
+                               type="checkbox">
+                    </div>
+                    <div class="switch-row">
+                        <div>
+                            <div class="switch-label">开机自动开启 ADB</div>
+                        </div>
+                        <input aria-label="开机自动 ADB" class="toggle" id="sw-boot-adb"
+                               type="checkbox">
+                    </div>
+                </section>
+
+                <section class="card">
+                    <div class="card-head">
+                        <div>
+                            <h2 class="card-title">开发机体检清单与 USB 外设</h2>
+                            <div class="card-sub">确认权限、节点与开机策略</div>
+                        </div>
+                    </div>
+                    <div id="health-checks-list"></div>
+                    <div class="sub-box">
+                        <div style="font-weight:700;margin-bottom:4px;">已连接 USB 外设：</div>
+                        <div id="usb-devices-list">无</div>
+                    </div>
+                    <div class="sub-box" id="boot-history-box" style="display:none;">
+                        <div style="font-weight:700;margin-bottom:4px;">最近开机策略执行日志：</div>
+                        <div id="boot-history-list"></div>
+                    </div>
+                </section>
+            </div>
+
+            <div class="grid-2" style="margin-top: 12px;">
+                <section class="card">
+                    <div class="card-head"><h2 class="card-title">设备基础与运行时规格</h2></div>
+                    <div id="device-specs-list">加载中...</div>
+                </section>
+
+                <section class="card">
+                    <div class="card-head"><h2 class="card-title">网络接口与 Ping 连通性诊断</h2></div>
+                    <div id="network-info-list"></div>
+                    <div class="form-row" style="margin-top: 8px;">
+                        <input aria-label="Ping 目标地址" id="ping-host" placeholder="IP 或域名"
+                               type="text" value="223.5.5.5">
+                        <button class="btn primary" id="btn-ping" type="button">执行 Ping</button>
+                    </div>
+                    <pre id="ping-result">输入地址并点击「执行 Ping」</pre>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab 2: 性能实时曲线 -->
+    <div aria-labelledby="tab-perf" hidden="until-found" hidden id="panel-perf" role="tabpanel">
+        <div class="panel-inner">
+            <div class="grid-2">
+                <section class="card">
+                    <div class="card-head">
+                        <div>
+                            <h2 class="card-title">CPU 占用率</h2>
+                            <div class="card-sub" id="perf-cpu-sub">等待采样...</div>
+                        </div>
+                        <span class="metric-big" id="perf-cpu-val"
+                              style="color: var(--accent);">--%</span>
+                    </div>
+                    <div class="chart-box">
+                        <svg height="100%" id="chart-cpu" preserveAspectRatio="none"
+                             viewBox="0 0 400 120"
+                             width="100%"></svg>
+                    </div>
+                </section>
+
+                <section class="card">
+                    <div class="card-head">
+                        <div>
+                            <h2 class="card-title">GPU 负载</h2>
+                            <div class="card-sub" id="perf-gpu-sub">等待采样...</div>
+                        </div>
+                        <span class="metric-big" id="perf-gpu-val"
+                              style="color: #06b6d4;">--%</span>
+                    </div>
+                    <div class="chart-box">
+                        <svg height="100%" id="chart-gpu" preserveAspectRatio="none"
+                             viewBox="0 0 400 120"
+                             width="100%"></svg>
+                    </div>
+                </section>
+
+                <section class="card">
+                    <div class="card-head">
+                        <div>
+                            <h2 class="card-title">内存占用 (RAM & ZRAM)</h2>
+                            <div class="card-sub" id="perf-ram-sub">等待采样...</div>
+                        </div>
+                        <span class="metric-big" id="perf-ram-val"
+                              style="color: var(--green);">--%</span>
+                    </div>
+                    <div class="chart-box">
+                        <svg height="100%" id="chart-ram" preserveAspectRatio="none"
+                             viewBox="0 0 400 120"
+                             width="100%"></svg>
+                    </div>
+                </section>
+
+                <section class="card">
+                    <div class="card-head">
+                        <div>
+                            <h2 class="card-title" id="card4-title">硬盘读写 (Disk I/O)</h2>
+                            <div class="card-sub" id="card4-sub">读取 (青) · 写入 (琥珀)</div>
+                        </div>
+                        <button class="btn sm" id="btn-toggle-disk-gc" type="button">切至 ART GC
+                        </button>
+                    </div>
+                    <div id="card4-disk-view">
+                        <div class="chart-box">
+                            <svg height="100%" id="chart-disk" preserveAspectRatio="none"
+                                 viewBox="0 0 400 120"
+                                 width="100%"></svg>
+                        </div>
+                        <div class="kv-row"><span class="kv-k">磁盘读取 / 写入</span><span
+                                class="kv-v mono" id="perf-disk-rw">-</span></div>
+                        <div class="kv-row"><span class="kv-k">/data 分区余量</span><span
+                                class="kv-v mono" id="perf-data-space">-</span></div>
+                    </div>
+                    <div id="card4-gc-view" style="display:none;">
+                        <div class="kv-row"><span class="kv-k">ART GC 总次数 / 阻塞次数</span><span
+                                class="kv-v mono" id="gc-counts">-</span></div>
+                        <div class="kv-row"><span class="kv-k">GC 累计耗时</span><span
+                                class="kv-v mono" id="gc-time">-</span></div>
+                        <div class="kv-row"><span class="kv-k">JVM 堆已用 / 上限</span><span
+                                class="kv-v mono" id="gc-heap">-</span></div>
+                    </div>
+                    <div class="kv-row"><span class="kv-k">网络下行 (RX) / 上行 (TX)</span><span
+                            class="kv-v mono" id="perf-net-rxtx">-</span></div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab 3: 温度与调频 -->
+    <div aria-labelledby="tab-thermal" hidden="until-found" hidden id="panel-thermal"
+         role="tabpanel">
+        <div class="panel-inner">
+            <section class="card">
+                <div class="card-head">
+                    <div>
+                        <h2 class="card-title">SoC 温度实时曲线</h2>
+                        <div class="card-sub">黄线: 68°C 预警 · 红线: 80°C 高温告警</div>
+                    </div>
+                    <span class="pill" id="thermal-peak-pill">当前 -°C</span>
+                </div>
+                <div class="chart-box tall">
+                    <svg height="100%" id="chart-thermal" preserveAspectRatio="none"
+                         viewBox="0 0 600 160"
+                         width="100%"></svg>
+                </div>
+            </section>
+
+            <div class="grid-2">
+                <section class="card">
+                    <div class="card-head"><h2 class="card-title">全温区传感器
+                        (/sys/class/thermal)</h2></div>
+                    <div id="thermal-zones-list">加载中...</div>
+                </section>
+
+                <section class="card">
+                    <div class="card-head">
+                        <h2 class="card-title">CPU 集群调频与调度器 (cpufreq)</h2>
+                        <div class="btn-group">
+                            <button class="btn sm" data-cpugov="performance" type="button">performance</button>
+                            <button class="btn sm" data-cpugov="schedutil" type="button">schedutil</button>
+                            <button class="btn sm" data-cpugov="powersave" type="button">powersave</button>
+                        </div>
+                    </div>
+                    <div id="cpu-policies-list">加载中...</div>
+                    <div style="margin-top:14px;border-top:1px solid var(--border);padding-top:12px;">
+                        <div class="card-head" style="margin-bottom:8px;">
+                            <h3 class="card-title" style="font-size:0.95rem;">GPU 调频与调度器 (devfreq)</h3>
+                        </div>
+                        <div id="gpu-devfreq-list">加载中...</div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab 4: 压力测试与老化 -->
+    <div aria-labelledby="tab-stress" hidden="until-found" hidden id="panel-stress" role="tabpanel">
+        <div class="panel-inner">
+            <div class="grid-2">
+                <section class="card">
+                    <div class="card-head">
+                        <h2 class="card-title">远程压测控制</h2>
+                        <span class="pill ok" id="stress-status-pill">未运行</span>
+                    </div>
+                    <div class="form-row">
+                        <label for="st-type">压测模式</label>
+                        <select id="st-type">
+                            <option value="SAT">Google SAT 混合满载 (DDR+CPU)</option>
+                            <option value="CPU">CPU 浮点计算</option>
+                            <option value="MEMORY">纯内存校验</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <label for="st-threads">并发核心</label>
+                        <select id="st-threads">
+                            <option value="1">1 核</option>
+                            <option value="2">2 核</option>
+                            <option selected value="4">4 核 / 全核</option>
+                            <option value="8">8 核</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <label for="st-ram">内存容量</label>
+                        <select id="st-ram">
+                            <option value="64">64 MB</option>
+                            <option value="128">128 MB</option>
+                            <option selected value="256">256 MB</option>
+                            <option value="512">512 MB</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <label for="st-dur">持续时间</label>
+                        <select id="st-dur">
+                            <option value="20">20 秒</option>
+                            <option selected value="60">1 分钟 (60s)</option>
+                            <option value="180">3 分钟 (180s)</option>
+                            <option value="600">10 分钟</option>
+                            <option value="0">持续压测</option>
+                        </select>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn danger" id="btn-stress-start" type="button">▶ 开始压测
+                        </button>
+                        <button class="btn primary" id="btn-stress-stop" type="button">■ 停止压测
+                        </button>
+                    </div>
+
+                    <div class="sub-box" id="last-aging-card" style="display:none;margin-top:6px;">
+                        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
+                            <strong>最近一次老化报告</strong>
+                            <span class="pill ok" id="last-aging-pill">PASS</span>
+                        </div>
+                        <div class="card-sub" id="last-aging-summary" style="margin:6px 0;"></div>
+                        <div class="btn-group">
+                            <button class="btn sm" id="btn-stress-preview" type="button">👁
+                                在线查看报告
+                            </button>
+                            <button class="btn sm primary" id="btn-stress-export" type="button">💾
+                                导出至 U 盘/本机
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="card">
+                    <div class="card-head">
+                        <h2 class="card-title">实时压测指标与终端日志</h2>
+                        <span class="pill" id="stress-temp-val">-°C</span>
+                    </div>
+                    <div class="kv-row"><span class="kv-k">已运行时间</span><span class="kv-v mono"
+                                                                                  id="st-elapsed">0s</span>
+                    </div>
+                    <div class="kv-row"><span class="kv-k">SAT 内存吞吐</span><span
+                            class="kv-v mono" id="st-throughput">0.0 MB/s</span></div>
+                    <div class="kv-row"><span class="kv-k">硬件 / DDR 错误计数</span><span
+                            class="kv-v mono" id="st-errors">0</span></div>
+                    <div class="kv-row"><span class="kv-k">状态描述</span><span class="kv-v"
+                                                                                id="st-msg">就绪</span>
+                    </div>
+                    <pre id="st-logs">等待压测输出...</pre>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab 5: 音频与板级节点 -->
+    <div aria-labelledby="tab-audio" hidden="until-found" hidden id="panel-audio" role="tabpanel">
+        <div class="panel-inner">
+            <div class="grid-2">
+                <section class="card">
+                    <div class="card-head"><h2 class="card-title">ALSA 声卡与 PCM 流
+                        (/proc/asound)</h2></div>
+                    <div id="alsa-cards-list">加载中...</div>
+                </section>
+
+                <section class="card">
+                    <div class="card-head"><h2 class="card-title">Android 音频输出设备与属性</h2>
+                    </div>
+                    <div id="audio-devices-list">加载中...</div>
+                    <div class="sub-box mono" id="audio-props-box"></div>
+                </section>
+            </div>
+
+            <section class="card" style="margin-bottom: 12px;">
+                <div class="card-head">
+                    <h2 class="card-title">数字测试信号发生器 (Audio Tone)</h2>
+                    <span class="pill" id="tone-status-pill">已停止</span>
+                </div>
+                <div class="form-row" style="flex-wrap:wrap;gap:8px;">
+                    <select aria-label="波形" id="tone-waveform">
+                        <option value="SINE_1K">1 kHz 正弦波</option>
+                        <option value="SINE_440">440 Hz 正弦波</option>
+                        <option value="SINE_100">100 Hz 正弦波</option>
+                        <option value="SINE_10K">10 kHz 正弦波</option>
+                        <option value="SWEEP">扫频 (20Hz-20kHz)</option>
+                        <option value="WHITE_NOISE">白噪声</option>
+                    </select>
+                    <select aria-label="声道" id="tone-channel">
+                        <option value="STEREO">双声道立体声</option>
+                        <option value="LEFT_ONLY">仅左声道 (L)</option>
+                        <option value="RIGHT_ONLY">仅右声道 (R)</option>
+                        <option value="PHASE_INVERT">左右反相 (180°)</option>
+                    </select>
+                    <select aria-label="采样率" id="tone-rate">
+                        <option value="44100">44.1 kHz</option>
+                        <option value="48000" selected>48 kHz</option>
+                        <option value="88200">88.2 kHz</option>
+                        <option value="96000">96 kHz</option>
+                        <option value="192000">192 kHz</option>
+                    </select>
+                    <select aria-label="电平" id="tone-db">
+                        <option value="0">0 dBFS</option>
+                        <option value="-3">-3 dBFS</option>
+                        <option value="-6" selected>-6 dBFS</option>
+                        <option value="-12">-12 dBFS</option>
+                        <option value="-20">-20 dBFS</option>
+                    </select>
+                    <button class="btn primary" id="btn-tone-start" type="button">▶ 开始播放</button>
+                    <button class="btn danger" id="btn-tone-stop" type="button">■ 停止播放</button>
+                </div>
+            </section>
+
+            <section class="card">
+                <div class="card-head">
+                    <h2 class="card-title" id="sysfs-caption">板级 Sysfs 调试节点
+                        (支持在线读取与写入)</h2>
+                    <div class="form-row" style="margin:0;">
+                        <input aria-label="自定义 Sysfs 路径" id="sysfs-custom-path" placeholder="/sys/class/..." style="width:240px;" type="text">
+                        <button class="btn sm primary" id="btn-sysfs-add" type="button">+ 添加自定义节点</button>
+                    </div>
+                </div>
+                <div aria-labelledby="sysfs-caption" class="table-wrapper scroller" role="region"
+                     tabindex="0">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>分组</th>
+                            <th>节点名称</th>
+                            <th>路径</th>
+                            <th>当前值</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody id="sysfs-tbody"></tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- Tab 6: 系统工具 (系统属性 & AOT) -->
+    <div aria-labelledby="tab-tools" hidden="until-found" hidden id="panel-tools" role="tabpanel">
+        <div class="panel-inner">
+            <section class="card" style="margin-bottom: 12px;">
+                <div class="card-head">
+                    <h2 class="card-title">系统属性浏览器与修改 (getprop / setprop)</h2>
+                    <div class="form-row" style="margin:0;">
+                        <input aria-label="搜索属性" id="sysprop-search" placeholder="过滤 Key 或 Value..." style="width:210px;" type="text">
+                        <button class="btn sm" id="btn-sysprop-refresh" type="button">🔄 刷新属性</button>
+                    </div>
+                </div>
+                <div class="form-row" style="margin-bottom:10px;flex-wrap:wrap;">
+                    <input aria-label="属性 Key" id="sysprop-set-key" placeholder="属性 Key (例如 persist.sys.xxx)" style="width:240px;" type="text">
+                    <input aria-label="属性 Value" id="sysprop-set-val" placeholder="新属性值" style="width:180px;" type="text">
+                    <button class="btn sm primary" id="btn-sysprop-set" type="button">执行 setprop</button>
+                </div>
+                <div class="table-wrapper scroller" style="max-height:360px;">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>属性 Key</th>
+                            <th>当前值 Value</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody id="sysprops-tbody"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="card">
+                <div class="card-head">
+                    <div>
+                        <h2 class="card-title">ART AOT 预编译优化 (dexopt)</h2>
+                        <div class="card-sub" id="aot-status-sub">加载中...</div>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn sm primary" id="btn-aot-batch" type="button">⚡ 一键全部 SPEED 编译</button>
+                        <button class="btn sm" id="btn-aot-refresh" type="button">🔄 刷新列表</button>
+                    </div>
+                </div>
+                <div class="form-row" style="margin-bottom:8px;">
+                    <input aria-label="搜索应用" id="aot-search" placeholder="过滤包名或应用名..." style="width:220px;" type="text">
+                </div>
+                <div class="table-wrapper scroller" style="max-height:360px;">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>应用名称 / 包名</th>
+                            <th>编译状态</th>
+                            <th>ABI</th>
+                            <th>ODEX 大小</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody id="aot-tbody"></tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- Tab 7: 报告与崩溃回溯 -->
+    <div aria-labelledby="tab-reports" hidden="until-found" hidden id="panel-reports"
+         role="tabpanel">
+        <div class="panel-inner">
+            <section class="card">
+                <div class="card-head">
+                    <div>
+                        <h2 class="card-title">存储策略与系统异常概览</h2>
+                        <div class="card-sub" id="rep-storage-desc">正在检查 U 盘...</div>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn" id="btn-gen-crash" type="button">⚡ 生成崩溃摘要报告
+                        </button>
+                        <button class="btn primary" id="btn-gen-bugreport" type="button">📦 生成系统
+                            Bugreport ZIP
+                        </button>
+                    </div>
+                </div>
+                <div class="sub-box" id="br-progress-box" style="display:none;margin-bottom:8px;">
+                    <div id="br-status-text" style="font-weight:600;margin-bottom:4px;"></div>
+                    <progress id="br-progress" max="100" style="width:100%;height:10px;"
+                              value="0"></progress>
+                </div>
+                <div class="grid-4" id="crash-summary-cards"></div>
+            </section>
+
+            <section class="card">
+                <div class="card-head">
+                    <h2 class="card-title" id="reports-table-caption">老化测试与崩溃诊断归档报告 (支持
+                        U 盘与本机)</h2>
+                </div>
+                <div aria-labelledby="reports-table-caption" class="table-wrapper scroller"
+                     role="region"
+                     tabindex="0">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>文件名</th>
+                            <th>类型</th>
+                            <th>位置</th>
+                            <th>时间</th>
+                            <th>摘要 / 判定</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody id="reports-tbody"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <div class="grid-2">
+                <section class="card">
+                    <div class="card-head">
+                        <h2 class="card-title" id="tomb-table-caption">实时 Native 崩溃
+                            (/data/tombstones)</h2>
+                    </div>
+                    <div aria-labelledby="tomb-table-caption" class="table-wrapper scroller"
+                         role="region"
+                         tabindex="0">
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>文件</th>
+                                <th>进程 (PID)</th>
+                                <th>信号</th>
+                                <th>操作</th>
+                            </tr>
+                            </thead>
+                            <tbody id="tombstones-tbody"></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section class="card">
+                    <div class="card-head">
+                        <h2 class="card-title" id="anr-table-caption">应用无响应记录 (DropBox & ANR
+                            Traces)</h2>
+                    </div>
+                    <div aria-labelledby="anr-table-caption" class="table-wrapper scroller"
+                         role="region"
+                         tabindex="0">
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>进程</th>
+                                <th>原因</th>
+                                <th>时间</th>
+                                <th>操作</th>
+                            </tr>
+                            </thead>
+                            <tbody id="anrs-tbody"></tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+
+            <section class="card" id="ramoops-box" style="display:none;">
+                <div class="card-head">
+                    <h2 class="card-title" style="color:var(--red);">PStore Ramoops 内核崩溃日志
+                        (/sys/fs/pstore/console-ramoops-0)</h2>
+                </div>
+                <pre id="ramoops-pre"></pre>
+            </section>
+        </div>
+    </div>
+</div>
+
+<!-- Native Dialog: 报告/堆栈/Trace 预览 -->
+<dialog aria-labelledby="dlg-rep-title" closedby="any" id="report-dialog">
+    <div class="dialog-head">
+        <div>
+            <h2 class="mono" id="dlg-rep-title">预览</h2>
+            <div class="card-sub" id="dlg-rep-sub"></div>
+        </div>
+        <form method="dialog">
+            <button class="btn" type="submit" value="close">关闭</button>
+        </form>
+    </div>
+    <div class="dialog-body scroller">
+        <pre id="dlg-rep-content">加载中...</pre>
+    </div>
+    <div class="dialog-actions">
+        <button class="btn" id="dlg-rep-copy" type="button">📋 复制全文</button>
+        <a class="btn primary" download href="#" id="dlg-rep-download">⬇ 下载文件</a>
+    </div>
+</dialog>
+
+<!-- Native Dialog: 重启确认 -->
+<dialog aria-labelledby="dlg-reboot-title" class="narrow" id="reboot-dialog">
+    <div class="dialog-head">
+        <h2 id="dlg-reboot-title">确认立即重启设备？</h2>
+    </div>
+    <div class="dialog-body">
+        <p style="margin:0;color:var(--muted);font-size:0.9rem;">设备将立即执行系统重启，重启期间 Web
+            控制台将暂时断开连接。</p>
+    </div>
+    <form class="dialog-actions" method="dialog">
+        <button autofocus class="btn" type="submit" value="cancel">取消</button>
+        <button class="btn danger" type="submit" value="reboot">确认重启</button>
+    </form>
+</dialog>
+
+<div aria-live="polite" class="toast" id="toast" role="status"></div>
+
+<script>
+    (() => {
+      const I18N = {
+        'zh-CN': {
+          brand: '⚙️ ToolHub Web 控制台', copyAdb: '📋 复制 ADB 连接', copySnap: '📄 复制诊断快照',
+          refresh: '🔄 刷新', reboot: '↻ 重启',
+          tabs: ['总览与设备', '性能实时曲线', '温度与调频', '压力测试与老化', '音频与板级节点', '系统工具', '报告与崩溃回溯'],
+        },
+        'zh-TW': {
+          brand: '⚙️ ToolHub Web 控制台', copyAdb: '📋 複製 ADB 連線', copySnap: '📄 複製診斷快照',
+          refresh: '🔄 重新整理', reboot: '↻ 重啟',
+          tabs: ['總覽與裝置', '效能即時曲線', '溫度與調頻', '壓力測試與老化', '音訊與板級節點', '系統工具', '報告與崩潰回溯'],
+        },
+        'en': {
+          brand: '⚙️ ToolHub Web Console', copyAdb: '📋 Copy ADB', copySnap: '📄 Snapshot',
+          refresh: '🔄 Refresh', reboot: '↻ Reboot',
+          tabs: ['Overview & Device', 'Performance', 'Thermal & Freq', 'Stress & Aging', 'Audio & Sysfs', 'System Tools', 'Reports & Crash'],
+        },
+        'ja': {
+          brand: '⚙️ ToolHub Web コンソール', copyAdb: '📋 ADB コピー', copySnap: '📄 スナップショット',
+          refresh: '🔄 更新', reboot: '↻ 再起動',
+          tabs: ['概要・端末', '性能グラフ', '温度・調頻', '負荷テスト・老化', '音声・Sysfs', 'システムツール', '報告・クラッシュ'],
+        },
+        'ko': {
+          brand: '⚙️ ToolHub Web 콘솔', copyAdb: '📋 ADB 복사', copySnap: '📄 스냅샷',
+          refresh: '🔄 새로고침', reboot: '↻ 재부팅',
+          tabs: ['개요 및 기기', '성능 그래프', '온도 및 제어', '부하 테스트', '오디오 및 Sysfs', '시스템 도구', '보고서 및 충돌'],
+        },
+      };
+
+      function detectLang() {
+        const saved = localStorage.getItem('toolhub_lang');
+        if (saved && I18N[saved]) return saved;
+        const nav = (navigator.language || 'zh-CN').toLowerCase();
+        if (nav.startsWith('zh-tw') || nav.startsWith('zh-hk') || nav.includes('hant')) return 'zh-TW';
+        if (nav.startsWith('ja')) return 'ja';
+        if (nav.startsWith('ko')) return 'ko';
+        if (nav.startsWith('en')) return 'en';
+        return 'zh-CN';
+      }
+
+      function applyLang(lang) {
+        const dict = I18N[lang] || I18N['zh-CN'];
+        document.documentElement.lang = lang;
+        document.querySelector('.brand h1 > span').textContent = dict.brand;
+        document.getElementById('btn-copy-adb').textContent = dict.copyAdb;
+        document.getElementById('btn-copy-snapshot').textContent = dict.copySnap;
+        document.getElementById('btn-refresh-all').textContent = dict.refresh;
+        document.getElementById('btn-open-reboot').textContent = dict.reboot;
+        const tabEls = document.querySelectorAll('[role="tab"]');
+        dict.tabs.forEach((txt, i) => { if (tabEls[i]) tabEls[i].textContent = txt; });
+        localStorage.setItem('toolhub_lang', lang);
+      }
+
+      const langSel = document.getElementById('lang-select');
+      const initLang = detectLang();
+      langSel.value = initLang;
+      applyLang(initLang);
+      langSel.addEventListener('change', (e) => applyLang(e.target.value));
+
+      const tabs = Array.from(document.querySelectorAll('[role="tab"]'));
+      const panels = Array.from(document.querySelectorAll('[role="tabpanel"]'));
+      let activeTabId = 'tab-overview';
+      let latestOverview = null;
+      let latestAnrs = [];
+      let showGcMode = false;
+
+      function selectTab(tab) {
+        activeTabId = tab.id;
+        for (const t of tabs) {
+          t.setAttribute('aria-selected', t === tab ? 'true' : 'false');
+        }
+        for (const p of panels) {
+          const match = p.getAttribute('aria-labelledby') === tab.id;
+          if (match) {
+            p.removeAttribute('hidden');
+            p.setAttribute('tabindex', '0');
+          } else {
+            p.setAttribute('hidden', 'until-found');
+            p.removeAttribute('tabindex');
+          }
+        }
+        tab.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+        refreshActiveTab();
+      }
+
+      for (const t of tabs) t.addEventListener('click', () => selectTab(t));
+      for (const p of panels) {
+        p.addEventListener('beforematch', () => {
+          const tab = document.getElementById(p.getAttribute('aria-labelledby'));
+          if (tab) selectTab(tab);
+        });
+      }
+
+      function showToast(msg) {
+        const el = document.getElementById('toast');
+        el.textContent = msg;
+        el.style.display = 'block';
+        clearTimeout(el._timer);
+        el._timer = setTimeout(() => { el.style.display = 'none'; }, 3200);
+      }
+
+      async function apiGet(url) {
+        const res = await fetch(url, { cache: 'no-store' });
+        return res.json();
+      }
+
+      async function apiPost(url, data) {
+        const pinVal = (document.getElementById('web-pin-input')?.value || '').trim();
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-ToolHub-Pin': pinVal,
+          },
+          body: JSON.stringify(data || {}),
+        });
+        return res.json();
+      }
+
+      function esc(str) {
+        return String(str ?? '').replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
+      }
+
+      function fmtBytes(b) {
+        if (b >= 1073741824) return (b / 1073741824).toFixed(2) + ' GB';
+        if (b >= 1048576) return (b / 1048576).toFixed(1) + ' MB';
+        if (b >= 1024) return (b / 1024).toFixed(1) + ' KB';
+        return b + ' B';
+      }
+
+      const cpuHist = [], gpuHist = [], ramHist = [], diskRHist = [], diskWHist = [], tempHist = [];
+      function drawSpark(svgId, hist, color, maxVal = 100, minVal = 0) {
+        const svg = document.getElementById(svgId);
+        if (!svg) return;
+        const maxPts = 45;
+        const pts = hist.slice(-maxPts);
+        if (pts.length < 2) return;
+        const span = Math.max(1, maxVal - minVal);
+        const coords = pts.map((v, i) => {
+          const x = (i / (maxPts - 1)) * 400;
+          const pct = Math.max(0, Math.min(1, (v - minVal) / span));
+          const y = 120 - pct * 114 - 3;
+          return `${x.toFixed(1)},${y.toFixed(1)}`;
+        }).join(' ');
+        const lastX = ((pts.length - 1) / (maxPts - 1)) * 400;
+        svg.innerHTML = `<polygon points="0,120 ${coords} ${lastX.toFixed(1)},120" fill="${color}" fill-opacity="0.18"/><polyline points="${coords}" fill="none" stroke="${color}" stroke-width="2.4"/>`;
+      }
+
+      function drawDualDiskChart() {
+        const svg = document.getElementById('chart-disk');
+        if (!svg) return;
+        const maxPts = 45;
+        const rPts = diskRHist.slice(-maxPts);
+        const wPts = diskWHist.slice(-maxPts);
+        if (rPts.length < 2) return;
+        const peak = Math.max(1024 * 1024, ...rPts, ...wPts);
+        const toCoords = (arr) => arr.map((v, i) => {
+          const x = (i / (maxPts - 1)) * 400;
+          const y = 120 - (v / peak) * 110 - 5;
+          return `${x.toFixed(1)},${y.toFixed(1)}`;
+        }).join(' ');
+        svg.innerHTML = `<polyline points="${toCoords(rPts)}" fill="none" stroke="#06b6d4" stroke-width="2.2"/><polyline points="${toCoords(wPts)}" fill="none" stroke="#f59e0b" stroke-width="2.2"/>`;
+      }
+
+      function drawThermalChart() {
+        const svg = document.getElementById('chart-thermal');
+        if (!svg) return;
+        const maxPts = 50;
+        const pts = tempHist.slice(-maxPts);
+        const minT = 20, maxT = 95, span = maxT - minT;
+        const yWarn = 160 - ((68 - minT) / span) * 150 - 5;
+        const yDanger = 160 - ((80 - minT) / span) * 150 - 5;
+        let lines = `<line x1="0" y1="${yWarn.toFixed(1)}" x2="600" y2="${yWarn.toFixed(1)}" stroke="#f59e0b" stroke-dasharray="4 4" stroke-opacity="0.65"/>`;
+        lines += `<line x1="0" y1="${yDanger.toFixed(1)}" x2="600" y2="${yDanger.toFixed(1)}" stroke="#ef4444" stroke-dasharray="4 4" stroke-opacity="0.65"/>`;
+        if (pts.length >= 2) {
+          const coords = pts.map((v, i) => {
+            const x = (i / (maxPts - 1)) * 600;
+            const pct = Math.max(0, Math.min(1, (v - minT) / span));
+            const y = 160 - pct * 150 - 5;
+            return `${x.toFixed(1)},${y.toFixed(1)}`;
+          }).join(' ');
+          lines += `<polyline points="${coords}" fill="none" stroke="#ef4444" stroke-width="2.6"/>`;
+        }
+        svg.innerHTML = lines;
+      }
+
+      async function loadOverview() {
+        try {
+          const d = await apiGet('/api/overview');
+          latestOverview = d;
+          const pinInput = document.getElementById('web-pin-input');
+          if (pinInput) pinInput.style.display = d.pinRequired ? 'inline-block' : 'none';
+          document.getElementById('hdr-device-sub').textContent =
+            `${d.device.model} · Android ${d.device.androidVersion} (API ${d.device.sdkInt}) · ${d.device.socPlatform} · 运行 ${d.device.uptime}`;
+
+          const uidBadge = document.getElementById('hdr-uid-badge');
+          uidBadge.textContent = d.device.uidSummary || 'uid';
+          uidBadge.className = d.device.uidSummary?.includes('1000') ? 'pill ok' : 'pill warn';
+
+          const usbBadge = document.getElementById('hdr-usb-badge');
+          if (d.usbStorage.attached) {
+            usbBadge.textContent = `✓ U盘: ${d.usbStorage.volumeLabel}`;
+            usbBadge.className = 'pill ok';
+          } else {
+            usbBadge.textContent = '未接入 U 盘';
+            usbBadge.className = 'pill warn';
+          }
+
+          const stBadge = document.getElementById('hdr-stress-badge');
+          if (d.stress.isRunning) {
+            stBadge.textContent = `⚡ 压测中 ${d.stress.elapsedSeconds}s`;
+            stBadge.className = 'pill danger';
+          } else {
+            stBadge.textContent = '✓ 运行正常';
+            stBadge.className = 'pill ok';
+          }
+
+          // OTG
+          document.getElementById('otg-node-sub').textContent = `发现 ${d.otg.nodes.length} 个节点`;
+          const curMode = d.otg.nodes[0]?.mode || '-';
+          document.getElementById('otg-mode-pill').textContent = curMode;
+          document.querySelectorAll('[data-otg]').forEach(btn => {
+            btn.classList.toggle('active-mode', btn.dataset.otg === curMode);
+          });
+          document.getElementById('otg-nodes-list').innerHTML = d.otg.nodes.map(n => `
+            <div class="sub-box" style="margin-bottom:6px;">
+              <div class="mono" style="font-size:0.75rem;">${esc(n.path)}</div>
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:6px;margin-top:6px;flex-wrap:wrap;">
+                <span>当前: <b>${esc(n.mode)}</b> (${n.writable ? '<span style="color:var(--green)">可写</span>' : '只读'})</span>
+                ${n.writable ? `<span class="btn-group">
+                  <button type="button" class="btn sm ${n.mode==='OTG'?'active-mode':''}" data-node-path="${esc(n.path)}" data-node-mode="OTG">OTG</button>
+                  <button type="button" class="btn sm ${n.mode==='HOST'?'active-mode':''}" data-node-path="${esc(n.path)}" data-node-mode="HOST">HOST</button>
+                  <button type="button" class="btn sm ${n.mode==='PERIPHERAL'?'active-mode':''}" data-node-path="${esc(n.path)}" data-node-mode="PERIPHERAL">PERIPHERAL</button>
+                </span>` : ''}
+              </div>
+            </div>
+          `).join('') || '<div class="sub-box">未发现 sysfs OTG 节点</div>';
+
+          document.getElementById('usb-props-box').innerHTML =
+            `sys.usb.config: ${esc(d.otg.usbConfig || '-')}<br>sys.usb.state: ${esc(d.otg.usbState || '-')}<br>usb.controller: ${esc(d.otg.usbController || '-')}`;
+
+          // Switches
+          document.getElementById('sw-adb').checked = d.controls.adbEnabled;
+          document.getElementById('sw-wifi-adb').checked = d.controls.wifiAdbEnabled;
+          document.getElementById('sw-stay-awake').checked = d.controls.stayAwakeEnabled;
+          document.getElementById('sw-boot-otg').checked = d.controls.autoOtgOnBoot;
+          document.getElementById('sw-boot-adb').checked = d.controls.autoAdbOnBoot;
+          document.getElementById('adb-props-sub').textContent = `adb connect ${d.device.activeIp}:${d.device.adbPort}`;
+
+          // Health Checks
+          document.getElementById('health-checks-list').innerHTML = (d.healthChecks || []).map(h =>
+            `<div class="kv-row"><span class="kv-k">${h.passed ? '✓' : '⚠'} ${esc(h.title)}</span><span class="kv-v" style="color:${h.passed ? 'var(--green)' : 'var(--amber)'}">${esc(h.detail)}</span></div>`
+          ).join('');
+
+          document.getElementById('usb-devices-list').innerHTML = d.otg.usbDevices.length
+            ? d.otg.usbDevices.map(u => `<div>• <b>${esc(u.name)}</b> (${esc(u.classLabel)}, ${esc(u.vidPid)})</div>`).join('')
+            : '当前未检测到 USB Host 外设';
+
+          const bhBox = document.getElementById('boot-history-box');
+          if (d.bootHistory && d.bootHistory.length) {
+            bhBox.style.display = 'block';
+            document.getElementById('boot-history-list').innerHTML = d.bootHistory.map(b =>
+              `<div>${b.success ? '✓' : '✗'} ${esc(b.trigger)} · ${esc(b.adbSummary)}</div>`
+            ).join('');
+          } else {
+            bhBox.style.display = 'none';
+          }
+
+          // Stress Panel sync
+          const stPill = document.getElementById('stress-status-pill');
+          stPill.textContent = d.stress.isRunning ? `压测中 (${d.stress.type})` : '未运行';
+          stPill.className = d.stress.isRunning ? 'pill danger' : 'pill ok';
+          document.getElementById('btn-stress-start').disabled = d.stress.isRunning;
+          document.getElementById('btn-stress-stop').disabled = !d.stress.isRunning;
+          document.getElementById('stress-temp-val').textContent = d.stress.currentTempCelsius ? `${d.stress.currentTempCelsius.toFixed(1)} °C` : '-°C';
+          document.getElementById('st-elapsed').textContent = d.stress.durationSeconds > 0 ? `${d.stress.elapsedSeconds}s / ${d.stress.durationSeconds}s` : `${d.stress.elapsedSeconds}s`;
+          document.getElementById('st-throughput').textContent = `${d.stress.memThroughputMBs.toFixed(1)} MB/s`;
+          document.getElementById('st-errors').textContent = d.stress.memErrors;
+          document.getElementById('st-msg').textContent = d.stress.statusMessage;
+          document.getElementById('st-logs').textContent = (d.stress.recentLogs || []).join('\n') || '暂无日志';
+
+          const lastCard = document.getElementById('last-aging-card');
+          if (d.stress.lastReport) {
+            lastCard.style.display = 'block';
+            const r = d.stress.lastReport;
+            const p = document.getElementById('last-aging-pill');
+            p.textContent = r.isPass ? '✓ PASS 合格' : '✗ FAIL 未通过';
+            p.className = r.isPass ? 'pill ok' : 'pill danger';
+            document.getElementById('last-aging-summary').textContent =
+              `时长: ${r.elapsedSeconds}s · 峰值温度: ${r.peakTemp != null ? r.peakTemp.toFixed(1) + '°C' : '-'} · 错误: ${r.errors} 次`;
+          } else {
+            lastCard.style.display = 'none';
+          }
+
+          // Device Specs & Network
+          document.getElementById('device-specs-list').innerHTML = [
+            ['设备型号', `${d.device.model} (${d.device.brand} / ${d.device.manufacturer})`],
+            ['系统版本', `Android ${d.device.androidVersion} (API ${d.device.sdkInt})`],
+            ['Build 版本', d.device.buildDisplay],
+            ['SoC / ABI', `${d.device.socPlatform} / ${d.device.abi}`],
+            ['内核版本', d.device.kernelVersion],
+            ['内存 / 存储', `${d.device.ramSummary} · ${d.device.storageSummary}`],
+            ['屏幕规格', d.device.displaySummary],
+            ['开机原因', `${d.device.sysBootReason} (${d.device.isAbnormalReboot ? '⚠ 异常' : '✓ 正常'})`],
+          ].map(([k, v]) => `<div class="kv-row"><span class="kv-k">${k}</span><span class="kv-v mono">${esc(v)}</span></div>`).join('');
+
+          document.getElementById('network-info-list').innerHTML = [
+            ['当前局域网 IP', d.device.activeIp],
+            ['ADB 连接命令', `adb connect ${d.device.activeIp}:${d.device.adbPort}`],
+            ['Web 控制台地址', `http://${d.device.activeIp}:${location.port || 8080}`],
+          ].map(([k, v]) => `<div class="kv-row"><span class="kv-k">${k}</span><span class="kv-v mono">${esc(v)}</span></div>`).join('');
+
+          document.getElementById('rep-storage-desc').textContent = d.usbStorage.attached
+            ? `✓ 已接入 U 盘 (${d.usbStorage.volumeLabel})，导出报告将优先保存至 ${d.usbStorage.reportsDir} 并同步本机`
+            : '当前未接入 U 盘，导出报告保存至 /sdcard/Download/';
+
+          if (d.bugreport) {
+            const brBox = document.getElementById('br-progress-box');
+            const brBtn = document.getElementById('btn-gen-bugreport');
+            const brProg = document.getElementById('br-progress');
+            const hdrBr = document.getElementById('hdr-br-badge');
+            brBtn.disabled = d.bugreport.isGenerating;
+            if (d.bugreport.isGenerating) {
+              hdrBr.style.display = 'inline-flex';
+              document.getElementById('hdr-br-text').textContent = d.bugreport.isIndeterminate
+                ? `收集 Bugreport ${d.bugreport.elapsedSeconds}s`
+                : `收集 Bugreport ${Math.round(d.bugreport.progress)}%`;
+              brBtn.innerHTML = `<span class="spinner"></span> 收集 ZIP 中 (${d.bugreport.elapsedSeconds}s)...`;
+              brBox.style.display = 'block';
+              document.getElementById('br-status-text').innerHTML = `<span class="spinner"></span> ${esc(d.bugreport.statusMessage)}`;
+              if (d.bugreport.isIndeterminate) {
+                brProg.removeAttribute('value');
+              } else {
+                brProg.value = d.bugreport.progress;
+              }
+            } else {
+              hdrBr.style.display = 'none';
+              brBtn.textContent = '📦 生成系统 Bugreport ZIP';
+              if (d.bugreport.progress >= 100) {
+                brBox.style.display = 'block';
+                document.getElementById('br-status-text').textContent = d.bugreport.statusMessage;
+                brProg.value = 100;
+              } else {
+                brBox.style.display = 'none';
+              }
+            }
+          }
+        } catch (e) { console.error(e); }
+      }
+
+      async function loadTelemetry() {
+        try {
+          const t = await apiGet('/api/telemetry');
+          cpuHist.push(t.cpuPercent);
+          gpuHist.push(t.gpuPercent);
+          ramHist.push(t.memPercent);
+          diskRHist.push(t.diskReadBytesPerSec);
+          diskWHist.push(t.diskWriteBytesPerSec);
+
+          const mainZone = (t.thermalZones || []).find(z => z.celsius != null);
+          if (mainZone) tempHist.push(mainZone.celsius);
+
+          document.getElementById('perf-cpu-val').textContent = t.cpuPercent.toFixed(1) + '%';
+          document.getElementById('perf-cpu-sub').textContent = `1m 负载: ${t.loadAvg || '-'}`;
+          drawSpark('chart-cpu', cpuHist, '#3b82f6');
+
+          document.getElementById('perf-gpu-val').textContent = t.gpuAvailable ? t.gpuPercent.toFixed(1) + '%' : 'N/A';
+          document.getElementById('perf-gpu-sub').textContent = t.gpuAvailable ? `${t.gpuName} · ${t.gpuFreqMhz} MHz` : '当前平台未暴露 devfreq GPU 负载';
+          drawSpark('chart-gpu', gpuHist, '#06b6d4');
+
+          document.getElementById('perf-ram-val').textContent = t.memPercent.toFixed(1) + '%';
+          document.getElementById('perf-ram-sub').textContent = `RAM: ${fmtBytes(t.memUsedBytes)} / ${fmtBytes(t.memTotalBytes)}` +
+            (t.zramTotalBytes ? ` · ZRAM: ${fmtBytes(t.zramUsedBytes)} / ${fmtBytes(t.zramTotalBytes)}` : '');
+          drawSpark('chart-ram', ramHist, '#22c55e');
+
+          drawDualDiskChart();
+          document.getElementById('perf-disk-rw').textContent = `↓ ${fmtBytes(t.diskReadBytesPerSec)}/s · ↑ ${fmtBytes(t.diskWriteBytesPerSec)}/s`;
+          document.getElementById('perf-data-space').textContent = `${fmtBytes(t.dataFreeBytes)} 可用 / ${fmtBytes(t.dataTotalBytes)} (${t.dataUsedPercent.toFixed(1)}%)`;
+          document.getElementById('perf-net-rxtx').textContent = `↓ ${fmtBytes(t.netRxBytesPerSec)}/s · ↑ ${fmtBytes(t.netTxBytesPerSec)}/s`;
+
+          if (t.gc) {
+            document.getElementById('gc-counts').textContent = `${t.gc.gcCount} 次 (阻塞 ${t.gc.blockingGcCount} 次)`;
+            document.getElementById('gc-time').textContent = `${t.gc.gcTimeMs} ms`;
+            document.getElementById('gc-heap').textContent = `${fmtBytes(t.gc.jvmUsedBytes)} / ${fmtBytes(t.gc.jvmMaxBytes)}`;
+          }
+
+          drawThermalChart();
+          let peak = 0;
+          document.getElementById('thermal-zones-list').innerHTML = (t.thermalZones || []).map(z => {
+            if (z.celsius && z.celsius > peak) peak = z.celsius;
+            const cls = z.celsius >= 80 ? 'danger' : (z.celsius >= 68 ? 'warn' : 'ok');
+            return `<div class="kv-row"><span class="kv-k">${esc(z.type)} (${esc(z.zone)})</span><span class="pill ${cls}">${z.celsius != null ? z.celsius.toFixed(1) + ' °C' : esc(z.raw)}</span></div>`;
+          }).join('') || '无热区传感器';
+          document.getElementById('thermal-peak-pill').textContent = `最高 ${peak.toFixed(1)} °C`;
+
+          document.getElementById('cpu-policies-list').innerHTML = (t.cpuPolicies || []).map(p => {
+            const govs = (p.availableGovernors || []).map(g =>
+              `<button type="button" class="btn sm ${g === p.governor ? 'primary' : ''}" data-policy-gov="${esc(p.name)}" data-gov="${esc(g)}">${esc(g)}</button>`
+            ).join('');
+            const freqs = (p.availableFrequenciesKHz || []).map(f => {
+              const lbl = f >= 1000 ? `${Math.round(f / 1000)}M` : `${f}K`;
+              const isLocked = p.minKHz === f && p.maxKHz === f;
+              return `<button type="button" class="btn sm ${isLocked ? 'primary' : ''}" data-policy-freq="${esc(p.name)}" data-min="${f}" data-max="${f}">${lbl}</button>`;
+            }).join('');
+            const resetBtn = (p.availableFrequenciesKHz && p.availableFrequenciesKHz.length >= 2)
+              ? `<button type="button" class="btn sm" data-policy-freq="${esc(p.name)}" data-min="${p.availableFrequenciesKHz[0]}" data-max="${p.availableFrequenciesKHz[p.availableFrequenciesKHz.length - 1]}">恢复默认范围</button>`
+              : '';
+            return `<div class="sub-box" style="margin-bottom:8px;">
+              <div class="kv-row" style="border-bottom:none;padding:2px 0;">
+                <span class="kv-k"><strong>${esc(p.name)}</strong> (cpu ${esc(p.affectedCpus)})</span>
+                <span class="kv-v mono">${esc(p.curFreq)} (${esc(p.rangeFreq)}) · ${esc(p.governor)}</span>
+              </div>
+              ${govs ? `<div class="btn-group" style="margin-top:6px;flex-wrap:wrap;">${govs}</div>` : ''}
+              ${freqs ? `<div class="btn-group" style="margin-top:6px;flex-wrap:wrap;">${freqs}${resetBtn}</div>` : ''}
+            </div>`;
+          }).join('') || '无调频策略';
+
+          document.getElementById('gpu-devfreq-list').innerHTML = (t.gpuDevfreqs || []).map(g => {
+            const govs = (g.availableGovernors || []).map(gv =>
+              `<button type="button" class="btn sm ${gv === g.governor ? 'primary' : ''}" data-gpu-gov="${esc(g.name)}" data-gov="${esc(gv)}">${esc(gv)}</button>`
+            ).join('');
+            const freqs = (g.availableFrequenciesHz || []).map(f => {
+              const lbl = f >= 1000000 ? `${Math.round(f / 1000000)}M` : `${Math.round(f / 1000)}K`;
+              const isLocked = g.minHz === f && g.maxHz === f;
+              return `<button type="button" class="btn sm ${isLocked ? 'primary' : ''}" data-gpu-freq="${esc(g.name)}" data-min="${f}" data-max="${f}">${lbl}</button>`;
+            }).join('');
+            const resetBtn = (g.availableFrequenciesHz && g.availableFrequenciesHz.length >= 2)
+              ? `<button type="button" class="btn sm" data-gpu-freq="${esc(g.name)}" data-min="${g.availableFrequenciesHz[0]}" data-max="${g.availableFrequenciesHz[g.availableFrequenciesHz.length - 1]}">恢复默认范围</button>`
+              : '';
+            return `<div class="sub-box" style="margin-bottom:8px;">
+              <div class="kv-row" style="border-bottom:none;padding:2px 0;">
+                <span class="kv-k"><strong>${esc(g.name)}</strong></span>
+                <span class="kv-v mono">${esc(g.curFreq)} (${esc(g.rangeFreq)}) · ${esc(g.governor)}</span>
+              </div>
+              ${govs ? `<div class="btn-group" style="margin-top:6px;flex-wrap:wrap;">${govs}</div>` : ''}
+              ${freqs ? `<div class="btn-group" style="margin-top:6px;flex-wrap:wrap;">${freqs}${resetBtn}</div>` : ''}
+            </div>`;
+          }).join('') || '未检测到 GPU devfreq 节点';
+        } catch (e) { console.error(e); }
+      }
+
+      async function loadAudioAndSysfs() {
+        try {
+          const a = await apiGet('/api/audio');
+          if (a.tone) {
+            const pill = document.getElementById('tone-status-pill');
+            pill.textContent = a.tone.isPlaying ? `播放中 · ${a.tone.sampleRateHz}Hz` : '已停止';
+            pill.className = `pill ${a.tone.isPlaying ? 'ok' : ''}`;
+            const activeEl = document.activeElement;
+            if (!activeEl || !['tone-waveform', 'tone-channel', 'tone-rate', 'tone-db'].includes(activeEl.id)) {
+              document.getElementById('tone-waveform').value = a.tone.waveform || 'SINE_1K';
+              document.getElementById('tone-channel').value = a.tone.channelMode || 'STEREO';
+              document.getElementById('tone-rate').value = String(a.tone.sampleRateHz || 48000);
+              document.getElementById('tone-db').value = String(a.tone.attenuationDb ?? -6);
+            }
+          }
+
+          document.getElementById('alsa-cards-list').innerHTML = (a.cards || []).map(c => `
+            <div class="sub-box" style="margin-bottom:8px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;">
+                <strong>card${c.index}: ${esc(c.name)}</strong>
+                <span class="pill ${c.active ? 'ok' : ''}">${c.active ? '活跃中' : '空闲'}</span>
+              </div>
+              <div class="card-sub">${esc(c.description)}</div>
+              ${(c.streams || []).map(s => `<div class="mono" style="font-size:0.74rem;margin-top:4px;">• ${esc(s.pcmId)} (${esc(s.streamName)}): ${esc(s.statusText)} ${s.rate !== '-' ? `· ${esc(s.rate)}Hz · ${esc(s.format)}` : ''}</div>`).join('')}
+            </div>
+          `).join('') || '未检测到 ALSA 声卡';
+
+          document.getElementById('audio-devices-list').innerHTML = (a.outputDevices || []).map(d =>
+            `<div class="kv-row"><span class="kv-k">${esc(d.typeLabel)} (${esc(d.productName)})</span><span class="kv-v mono">${esc(d.sampleRates)}</span></div>`
+          ).join('') || '无音频输出设备';
+
+          const ap = a.audioProps || {};
+          document.getElementById('audio-props-box').innerHTML =
+            `usb_audio: ${esc(ap.usbAudioInfo || '-')} · exclusive: ${esc(ap.usbExclusive || '-')} · i2s: ${esc(ap.i2sMode || '-')}`;
+
+          if (!document.activeElement || !document.activeElement.closest('#sysfs-tbody')) {
+            document.getElementById('sysfs-tbody').innerHTML = (a.sysfsNodes || []).map(n => `
+              <tr>
+                <td data-label="分组">${esc(n.group)}</td>
+                <td data-label="节点">${esc(n.name)}</td>
+                <td data-label="路径" class="mono" style="font-size:0.76rem;">${esc(n.path)}</td>
+                <td data-label="当前值" class="mono">${esc(n.value)}</td>
+                <td data-label="操作"><div style="display:flex;gap:4px;align-items:center;">${n.writable
+                  ? `<input type="text" value="${esc(n.value)}" style="width:90px;" data-sysfs-input="${esc(n.path)}"><button type="button" class="btn sm primary" data-sysfs-write="${esc(n.path)}">写入</button>`
+                  : '<span class="pill">只读</span>'}${n.isCustom ? `<button type="button" class="btn sm danger" data-sysfs-remove="${esc(n.path)}">移除</button>` : ''}</div></td>
+              </tr>
+            `).join('') || '<tr><td colspan="5" style="text-align:center;color:var(--muted);">未发现预设板级调试节点</td></tr>';
+          }
+        } catch (e) { console.error(e); }
+      }
+
+      let cachedSysProps = [];
+      function renderSysProps() {
+        const q = (document.getElementById('sysprop-search').value || '').toLowerCase();
+        const filtered = cachedSysProps.filter(p =>
+          !q || p.key.toLowerCase().includes(q) || p.value.toLowerCase().includes(q)
+        ).slice(0, 200);
+        document.getElementById('sysprops-tbody').innerHTML = filtered.map(p => `
+          <tr>
+            <td data-label="Key" class="mono" style="font-size:0.78rem;">${esc(p.key)}</td>
+            <td data-label="Value" class="mono" style="font-size:0.78rem;word-break:break-all;">${esc(p.value)}</td>
+            <td data-label="操作"><button type="button" class="btn sm" data-sysprop-fill="${esc(p.key)}" data-sysprop-val="${esc(p.value)}">填充编辑</button></td>
+          </tr>
+        `).join('') || '<tr><td colspan="3" style="text-align:center;color:var(--muted);">无匹配系统属性</td></tr>';
+      }
+      async function loadSysProps() {
+        try {
+          const r = await apiGet('/api/sysprops');
+          cachedSysProps = r.props || [];
+          renderSysProps();
+        } catch (e) { console.error(e); }
+      }
+
+      let cachedAot = { apps: [] };
+      function renderAot() {
+        const q = (document.getElementById('aot-search').value || '').toLowerCase();
+        const filtered = (cachedAot.apps || []).filter(a =>
+          !q || a.packageName.toLowerCase().includes(q) || a.appLabel.toLowerCase().includes(q)
+        );
+        document.getElementById('aot-tbody').innerHTML = filtered.map(a => {
+          const cls = a.isSpeedCompiled ? 'ok' : (a.status === 'verify' ? 'warn' : '');
+          const sizeStr = a.odexSizeBytes > 0 ? `${(a.odexSizeBytes / 1048576).toFixed(1)} MB` : '-';
+          return `<tr>
+            <td data-label="应用"><div><strong>${esc(a.appLabel)}</strong></div><div class="mono card-sub">${esc(a.packageName)}</div></td>
+            <td data-label="状态"><span class="pill ${cls}">${esc(a.status)}</span> <span class="card-sub">${esc(a.reason)}</span></td>
+            <td data-label="ABI" class="mono">${esc(a.abi)}</td>
+            <td data-label="ODEX" class="mono">${sizeStr}</td>
+            <td data-label="操作" style="white-space:nowrap;">
+              <button type="button" class="btn sm primary" data-aot-pkg="${esc(a.packageName)}" data-aot-mode="SPEED">SPEED</button>
+              <button type="button" class="btn sm" data-aot-pkg="${esc(a.packageName)}" data-aot-mode="SPEED_PROFILE">Profile</button>
+              <button type="button" class="btn sm danger" data-aot-pkg="${esc(a.packageName)}" data-aot-mode="RESET">重置</button>
+            </td>
+          </tr>`;
+        }).join('') || '<tr><td colspan="5" style="text-align:center;color:var(--muted);">暂无应用数据</td></tr>';
+      }
+      async function loadAot() {
+        try {
+          const r = await apiGet('/api/aot');
+          cachedAot = r;
+          document.getElementById('aot-status-sub').textContent = r.isRunning
+            ? `正在批量编译 (${r.currentIndex}/${r.totalCount}): ${r.statusMessage}`
+            : (r.statusMessage || `共 ${(r.apps || []).length} 个应用`);
+          renderAot();
+        } catch (e) { console.error(e); }
+      }
+
+      async function loadReportsAndCrash() {
+        try {
+          const [reports, crash] = await Promise.all([apiGet('/api/reports'), apiGet('/api/crash')]);
+          latestAnrs = crash.anrs || [];
+
+          document.getElementById('crash-summary-cards').innerHTML = `
+            <div class="card"><div class="card-sub">开机原因</div><div style="font-weight:700;">${crash.bootReason.isAbnormal ? '⚠ 异常重启' : '✓ 正常'} (${esc(crash.bootReason.sysBootReason)})</div></div>
+            <div class="card"><div class="card-sub">Native Tombstones</div><div style="font-weight:700;">${crash.tombstones.length} 条记录</div></div>
+            <div class="card"><div class="card-sub">ANR 无响应</div><div style="font-weight:700;">${latestAnrs.length} 条记录</div></div>
+            <div class="card"><div class="card-sub">归档报告总数</div><div style="font-weight:700;">${reports.length} 份</div></div>
+          `;
+
+          document.getElementById('reports-tbody').innerHTML = reports.length ? reports.map(r => {
+            const badge = r.isPass === true ? '<span class="pill ok">PASS</span> ' : (r.isPass === false ? '<span class="pill danger">FAIL</span> ' : '');
+            const loc = r.isUsbDrive ? '<span class="pill accent">U盘</span>' : '<span class="pill">本机</span>';
+            const enc = encodeURIComponent(r.fileName);
+            return `<tr>
+              <td data-label="文件名" class="mono">${esc(r.fileName)}</td>
+              <td data-label="类型">${esc(r.typeLabel)}</td>
+              <td data-label="位置">${loc}</td>
+              <td data-label="时间">${esc(r.formattedTime)}</td>
+              <td data-label="摘要">${badge}<span class="card-sub">${esc(r.summary)}</span></td>
+              <td data-label="操作" style="white-space:nowrap;">
+                ${r.isZip ? '' : `<button type="button" class="btn sm" data-preview-report="${esc(r.fileName)}" data-loc="${esc(r.storageLocationLabel)}">在线打开</button>`}
+                <a class="btn sm primary" href="/download?file=${enc}" download>${r.isZip ? '⬇ 下载 ZIP' : '下载'}</a>
+              </td>
+            </tr>`;
+          }).join('') : '<tr><td colspan="6" style="text-align:center;color:var(--muted);">暂无归档报告</td></tr>';
+
+          document.getElementById('tombstones-tbody').innerHTML = crash.tombstones.length ? crash.tombstones.map(t => {
+            const enc = encodeURIComponent(t.fileName);
+            return `<tr>
+              <td data-label="文件" class="mono">${esc(t.fileName)}</td>
+              <td data-label="进程" class="mono">${esc(t.processName)} (${esc(t.pid)})</td>
+              <td data-label="信号" class="mono" style="color:var(--red);">${esc(t.signalText)}</td>
+              <td data-label="操作" style="white-space:nowrap;">
+                <button type="button" class="btn sm" data-preview-tomb="${esc(t.fileName)}">堆栈</button>
+                <a class="btn sm primary" href="/tombstone/download?name=${enc}" download>下载</a>
+              </td>
+            </tr>`;
+          }).join('') : '<tr><td colspan="4" style="text-align:center;color:var(--muted);">未检测到 Native Tombstone</td></tr>';
+
+          document.getElementById('anrs-tbody').innerHTML = latestAnrs.length ? latestAnrs.map((a, idx) => `
+            <tr>
+              <td data-label="进程" class="mono">${esc(a.processName)}</td>
+              <td data-label="原因">${esc(a.reason)}</td>
+              <td data-label="时间">${esc(a.timestampText)}</td>
+              <td data-label="操作"><button type="button" class="btn sm" data-preview-anr="${idx}">查看 Trace</button></td>
+            </tr>
+          `).join('') : '<tr><td colspan="4" style="text-align:center;color:var(--muted);">未检测到 ANR 记录</td></tr>';
+
+          const ramoopsBox = document.getElementById('ramoops-box');
+          if (crash.bootReason.lastKernelExcerpt) {
+            ramoopsBox.style.display = 'block';
+            document.getElementById('ramoops-pre').textContent = crash.bootReason.lastKernelExcerpt;
+          } else {
+            ramoopsBox.style.display = 'none';
+          }
+        } catch (e) { console.error(e); }
+      }
+
+      function refreshActiveTab() {
+        loadOverview();
+        if (activeTabId === 'tab-perf' || activeTabId === 'tab-thermal') loadTelemetry();
+        if (activeTabId === 'tab-audio') loadAudioAndSysfs();
+        if (activeTabId === 'tab-tools') { loadSysProps(); loadAot(); }
+        if (activeTabId === 'tab-reports') loadReportsAndCrash();
+      }
+
+      // Toggle Disk/GC 4th Card
+      document.getElementById('btn-toggle-disk-gc').addEventListener('click', () => {
+        showGcMode = !showGcMode;
+        document.getElementById('card4-disk-view').style.display = showGcMode ? 'none' : 'block';
+        document.getElementById('card4-gc-view').style.display = showGcMode ? 'block' : 'none';
+        document.getElementById('card4-title').textContent = showGcMode ? 'ART GC 垃圾回收' : '硬盘读写 (Disk I/O)';
+        document.getElementById('card4-sub').textContent = showGcMode ? 'JVM 堆与 GC 停顿统计' : '读取 (青) · 写入 (琥珀)';
+        document.getElementById('btn-toggle-disk-gc').textContent = showGcMode ? '切至 硬盘 I/O' : '切至 ART GC';
+      });
+
+      // Topbar copy buttons
+      document.getElementById('btn-copy-adb').addEventListener('click', async () => {
+        if (!latestOverview) return;
+        const cmd = `adb connect ${latestOverview.device.activeIp}:${latestOverview.device.adbPort}`;
+        if (navigator.clipboard) await navigator.clipboard.writeText(cmd);
+        showToast(`已复制: ${cmd}`);
+      });
+      document.getElementById('btn-copy-snapshot').addEventListener('click', async () => {
+        const d = await apiGet('/api/snapshot');
+        if (navigator.clipboard && d.snapshot) await navigator.clipboard.writeText(d.snapshot);
+        showToast('已复制环境诊断快照');
+      });
+
+      // Control Handlers
+      document.querySelectorAll('[data-otg]').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const r = await apiPost('/api/otg/mode', { mode: btn.dataset.otg });
+          showToast(r.message || 'OTG 模式已切换');
+          loadOverview();
+        });
+      });
+
+      document.addEventListener('click', async (e) => {
+        const nodeBtn = e.target.closest('[data-node-path]');
+        if (nodeBtn) {
+          const r = await apiPost('/api/otg/node', { path: nodeBtn.dataset.nodePath, mode: nodeBtn.dataset.nodeMode });
+          showToast(r.message || '节点模式已切换');
+          loadOverview();
+        }
+        const sysBtn = e.target.closest('[data-sysfs-write]');
+        if (sysBtn) {
+          const p = sysBtn.dataset.sysfsWrite;
+          const inp = document.querySelector(`[data-sysfs-input="${CSS.escape(p)}"]`);
+          const r = await apiPost('/api/sysfs/write', { path: p, value: inp ? inp.value : '' });
+          showToast(r.message || '写入完成');
+          loadAudioAndSysfs();
+        }
+        const sysRmBtn = e.target.closest('[data-sysfs-remove]');
+        if (sysRmBtn) {
+          const r = await apiPost('/api/sysfs/custom-remove', { path: sysRmBtn.dataset.sysfsRemove });
+          showToast(r.message || '已移除节点');
+          loadAudioAndSysfs();
+        }
+        const govBtn = e.target.closest('[data-cpugov]');
+        if (govBtn) {
+          const r = await apiPost('/api/cpufreq/governor', { mode: govBtn.dataset.cpugov });
+          showToast(r.message || 'CPU Governor 已切换');
+          loadTelemetry();
+        }
+        const pGovBtn = e.target.closest('[data-policy-gov]');
+        if (pGovBtn) {
+          const r = await apiPost('/api/cpufreq/policy-gov', { policy: pGovBtn.dataset.policyGov, governor: pGovBtn.dataset.gov });
+          showToast(r.message || '集群 Governor 已切换');
+          loadTelemetry();
+        }
+        const pFreqBtn = e.target.closest('[data-policy-freq]');
+        if (pFreqBtn) {
+          const r = await apiPost('/api/cpufreq/policy-freq', {
+            policy: pFreqBtn.dataset.policyFreq,
+            minFreq: Number(pFreqBtn.dataset.min),
+            maxFreq: Number(pFreqBtn.dataset.max)
+          });
+          showToast(r.message || '集群频率已更新');
+          loadTelemetry();
+        }
+        const gGovBtn = e.target.closest('[data-gpu-gov]');
+        if (gGovBtn) {
+          const r = await apiPost('/api/gpufreq/gov', { policy: gGovBtn.dataset.gpuGov, governor: gGovBtn.dataset.gov });
+          showToast(r.message || 'GPU Governor 已切换');
+          loadTelemetry();
+        }
+        const gFreqBtn = e.target.closest('[data-gpu-freq]');
+        if (gFreqBtn) {
+          const r = await apiPost('/api/gpufreq/freq', {
+            policy: gFreqBtn.dataset.gpuFreq,
+            minFreq: Number(gFreqBtn.dataset.min),
+            maxFreq: Number(gFreqBtn.dataset.max)
+          });
+          showToast(r.message || 'GPU 频率已更新');
+          loadTelemetry();
+        }
+        const propFillBtn = e.target.closest('[data-sysprop-fill]');
+        if (propFillBtn) {
+          document.getElementById('sysprop-set-key').value = propFillBtn.dataset.syspropFill;
+          document.getElementById('sysprop-set-val').value = propFillBtn.dataset.syspropVal || '';
+          document.getElementById('sysprop-set-val').focus();
+        }
+        const aotBtn = e.target.closest('[data-aot-pkg]');
+        if (aotBtn) {
+          const r = await apiPost('/api/aot/compile', { pkg: aotBtn.dataset.aotPkg, mode: aotBtn.dataset.aotMode });
+          showToast(r.message || '编译任务已提交');
+          loadAot();
+        }
+      });
+
+      async function sendToneAction(action) {
+        const r = await apiPost('/api/audio/tone', {
+          action,
+          waveform: document.getElementById('tone-waveform').value,
+          channelMode: document.getElementById('tone-channel').value,
+          sampleRateHz: parseInt(document.getElementById('tone-rate').value, 10),
+          attenuationDb: parseInt(document.getElementById('tone-db').value, 10)
+        });
+        showToast(r.message || '信号发生器已更新');
+        loadAudioAndSysfs();
+        if (action === 'stop') {
+          setTimeout(loadAudioAndSysfs, 1200);
+          setTimeout(loadAudioAndSysfs, 3200);
+        }
+      }
+      document.getElementById('btn-tone-start').addEventListener('click', () => sendToneAction('start'));
+      document.getElementById('btn-tone-stop').addEventListener('click', () => sendToneAction('stop'));
+      ['tone-waveform', 'tone-channel', 'tone-rate', 'tone-db'].forEach(id => {
+        document.getElementById(id).addEventListener('change', () => sendToneAction('config'));
+      });
+
+      document.getElementById('btn-sysfs-add').addEventListener('click', async () => {
+        const inp = document.getElementById('sysfs-custom-path');
+        const p = (inp.value || '').trim();
+        if (!p) return;
+        const r = await apiPost('/api/sysfs/custom-add', { path: p });
+        showToast(r.message || '已添加自定义节点');
+        if (r.ok) inp.value = '';
+        loadAudioAndSysfs();
+      });
+
+      document.getElementById('sysprop-search').addEventListener('input', renderSysProps);
+      document.getElementById('btn-sysprop-refresh').addEventListener('click', loadSysProps);
+      document.getElementById('btn-sysprop-set').addEventListener('click', async () => {
+        const key = (document.getElementById('sysprop-set-key').value || '').trim();
+        const value = document.getElementById('sysprop-set-val').value || '';
+        if (!key) { showToast('请输入属性 Key'); return; }
+        const r = await apiPost('/api/sysprops/set', { key, value });
+        showToast(r.message || '属性已设置');
+        loadSysProps();
+      });
+
+      document.getElementById('aot-search').addEventListener('input', renderAot);
+      document.getElementById('btn-aot-refresh').addEventListener('click', loadAot);
+      document.getElementById('btn-aot-batch').addEventListener('click', async () => {
+        const r = await apiPost('/api/aot/compile', { pkg: '', mode: 'BATCH_SPEED' });
+        showToast(r.message || '已启动批量编译');
+        loadAot();
+      });
+
+      document.getElementById('sw-adb').addEventListener('change', async (e) => {
+        const r = await apiPost('/api/controls/adb', { enabled: e.target.checked });
+        showToast(r.message || 'ADB 状态已更新');
+        loadOverview();
+      });
+      document.getElementById('sw-wifi-adb').addEventListener('change', async (e) => {
+        const r = await apiPost('/api/controls/wifi-adb', { enabled: e.target.checked });
+        showToast(r.message || '无线调试状态已更新');
+        loadOverview();
+      });
+      document.getElementById('sw-stay-awake').addEventListener('change', async (e) => {
+        const r = await apiPost('/api/controls/stay-awake', { enabled: e.target.checked });
+        showToast(r.message || '常亮设置已更新');
+        loadOverview();
+      });
+      async function updateBootPolicy() {
+        const r = await apiPost('/api/controls/boot-policy', {
+          autoOtg: document.getElementById('sw-boot-otg').checked,
+          autoAdb: document.getElementById('sw-boot-adb').checked,
+        });
+        showToast(r.message || '开机策略已保存');
+      }
+      document.getElementById('sw-boot-otg').addEventListener('change', updateBootPolicy);
+      document.getElementById('sw-boot-adb').addEventListener('change', updateBootPolicy);
+
+      document.getElementById('btn-stress-start').addEventListener('click', async () => {
+        const r = await apiPost('/api/stress/start', {
+          type: document.getElementById('st-type').value,
+          threads: parseInt(document.getElementById('st-threads').value, 10),
+          ramMB: parseInt(document.getElementById('st-ram').value, 10),
+          duration: parseInt(document.getElementById('st-dur').value, 10),
+        });
+        showToast(r.message || '已启动压测');
+        loadOverview();
+      });
+      document.getElementById('btn-stress-stop').addEventListener('click', async () => {
+        const r = await apiPost('/api/stress/stop', {});
+        showToast(r.message || '已停止压测');
+        loadOverview();
+      });
+      document.getElementById('btn-stress-export').addEventListener('click', async () => {
+        const r = await apiPost('/api/stress/export', {});
+        showToast(r.message || '已导出老化报告');
+        loadReportsAndCrash();
+      });
+      document.getElementById('btn-stress-preview').addEventListener('click', () => {
+        if (!latestOverview?.stress?.lastReport) return;
+        document.getElementById('dlg-rep-title').textContent = '本次老化测试报告';
+        document.getElementById('dlg-rep-sub').textContent = latestOverview.stress.lastReport.isPass ? '结论: PASS 合格' : '结论: FAIL 未通过';
+        document.getElementById('dlg-rep-content').textContent = latestOverview.stress.lastReport.markdown;
+        document.getElementById('dlg-rep-download').style.display = 'none';
+        repDlg.showModal();
+      });
+
+      document.getElementById('btn-gen-crash').addEventListener('click', async () => {
+        const r = await apiPost('/api/crash/export', {});
+        showToast(r.message || '已生成崩溃报告');
+        loadReportsAndCrash();
+      });
+      document.getElementById('btn-gen-bugreport').addEventListener('click', async () => {
+        const r = await apiPost('/api/bugreport/start', {});
+        showToast(r.message || '已启动系统 Bugreport ZIP 收集');
+        loadOverview();
+      });
+      document.getElementById('btn-ping').addEventListener('click', async () => {
+        const host = document.getElementById('ping-host').value.trim();
+        document.getElementById('ping-result').textContent = '正在执行 Ping...';
+        const r = await apiPost('/api/device/ping', { host });
+        document.getElementById('ping-result').textContent = r.output || r.message || '完成';
+      });
+      document.getElementById('btn-refresh-all').addEventListener('click', refreshActiveTab);
+
+      // Native Report Preview Modal
+      const repDlg = document.getElementById('report-dialog');
+      repDlg.addEventListener('close', () => { repDlg.returnValue = ''; });
+      document.addEventListener('click', async (e) => {
+        const repBtn = e.target.closest('[data-preview-report]');
+        if (repBtn) {
+          const name = repBtn.dataset.previewReport;
+          document.getElementById('dlg-rep-title').textContent = name;
+          document.getElementById('dlg-rep-sub').textContent = `存储位置: ${repBtn.dataset.loc || ''}`;
+          document.getElementById('dlg-rep-content').textContent = '正在加载内容...';
+          const dl = document.getElementById('dlg-rep-download');
+          dl.style.display = 'inline-flex';
+          dl.href = `/download?file=${encodeURIComponent(name)}`;
+          repDlg.showModal();
+          const d = await apiGet(`/api/report-content?file=${encodeURIComponent(name)}`);
+          document.getElementById('dlg-rep-content').textContent = d.content || d.error || '';
+        }
+        const tombBtn = e.target.closest('[data-preview-tomb]');
+        if (tombBtn) {
+          const name = tombBtn.dataset.previewTomb;
+          document.getElementById('dlg-rep-title').textContent = name;
+          document.getElementById('dlg-rep-sub').textContent = '位置: /data/tombstones';
+          document.getElementById('dlg-rep-content').textContent = '正在加载内容...';
+          const dl = document.getElementById('dlg-rep-download');
+          dl.style.display = 'inline-flex';
+          dl.href = `/tombstone/download?name=${encodeURIComponent(name)}`;
+          repDlg.showModal();
+          const d = await apiGet(`/api/tombstone-content?name=${encodeURIComponent(name)}`);
+          document.getElementById('dlg-rep-content').textContent = d.content || d.error || '';
+        }
+        const anrBtn = e.target.closest('[data-preview-anr]');
+        if (anrBtn) {
+          const item = latestAnrs[parseInt(anrBtn.dataset.previewAnr, 10)];
+          if (item) {
+            document.getElementById('dlg-rep-title').textContent = `${item.processName} (${item.tag})`;
+            document.getElementById('dlg-rep-sub').textContent = `时间: ${item.timestampText}`;
+            document.getElementById('dlg-rep-content').textContent = item.excerpt || item.reason;
+            document.getElementById('dlg-rep-download').style.display = 'none';
+            repDlg.showModal();
+          }
+        }
+      });
+      document.getElementById('dlg-rep-copy').addEventListener('click', async () => {
+        const txt = document.getElementById('dlg-rep-content').textContent;
+        if (navigator.clipboard) {
+          await navigator.clipboard.writeText(txt);
+          showToast('已复制全文到剪贴板');
+        }
+      });
+
+      // Reboot Modal
+      const rebootDlg = document.getElementById('reboot-dialog');
+      document.getElementById('btn-open-reboot').addEventListener('click', () => rebootDlg.showModal());
+      rebootDlg.addEventListener('close', async () => {
+        const val = rebootDlg.returnValue;
+        rebootDlg.returnValue = '';
+        if (val === 'reboot') {
+          const r = await apiPost('/api/device/reboot', {});
+          showToast(r.message || '设备正在重启...');
+        }
+      });
+
+      refreshActiveTab();
+      setInterval(() => {
+        if (activeTabId === 'tab-perf' || activeTabId === 'tab-thermal') loadTelemetry();
+        if (activeTabId === 'tab-audio') loadAudioAndSysfs();
+        if (activeTabId === 'tab-overview' || activeTabId === 'tab-stress' || (activeTabId === 'tab-reports' && latestOverview?.bugreport?.isGenerating)) {
+          const wasGen = latestOverview?.bugreport?.isGenerating;
+          loadOverview().then(() => {
+            if (wasGen && !latestOverview?.bugreport?.isGenerating && activeTabId === 'tab-reports') {
+              loadReportsAndCrash();
+            }
+          });
+        }
+      }, 2000);
+    })();
+</script>
+</body>
+</html>

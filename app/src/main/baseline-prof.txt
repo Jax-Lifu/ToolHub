@@ -1,0 +1,33 @@
+# ToolHub App-Specific Baseline Profile (Hot Startup & Navigation Paths)
+# Cold start & root navigation
+Lcom/qytech/toolhub/MainActivity;
+HSPLcom/qytech/toolhub/MainActivity;->**(**)**
+HSPLcom/qytech/toolhub/MainActivityKt;->**(**)**
+Lcom/qytech/toolhub/Screen*;
+
+# Primary Compose Screens & Live Charts
+HSPLcom/qytech/toolhub/HomeScreenKt;->HomeScreen(**)**
+HSPLcom/qytech/toolhub/OtgModeScreenKt;->OtgModeScreen(**)**
+HSPLcom/qytech/toolhub/PerfScreenKt;->PerfScreen(**)**
+HSPLcom/qytech/toolhub/PerfScreenKt;->PerfChartsArea(**)**
+HSPLcom/qytech/toolhub/ThermalScreenKt;->ThermalScreen(**)**
+HSPLcom/qytech/toolhub/ThermalScreenKt;->ThermalChartSection(**)**
+HSPLcom/qytech/toolhub/AudioScreenKt;->AudioScreen(**)**
+HSPLcom/qytech/toolhub/ToolsScreenKt;->ToolsScreen(**)**
+HSPLcom/qytech/toolhub/DeviceInfoScreenKt;->DeviceInfoScreen(**)**
+HSPLcom/qytech/toolhub/ui/components/LiveLineChartKt;->**(**)**
+HSPLcom/qytech/toolhub/ui/components/ToolHubComponentsKt;->**(**)**
+HSPLcom/qytech/toolhub/ui/theme/**;->**(**)**
+
+# ViewModels & Core Repositories (Startup + 1s Telemetry Loop + Web Server)
+HSPLcom/qytech/toolhub/MonitorViewModel;->**(**)**
+HSPLcom/qytech/toolhub/OtgModeViewModel;->**(**)**
+HSPLcom/qytech/toolhub/HardwareViewModel;->**(**)**
+HSPLcom/qytech/toolhub/DeviceInfoViewModel;->**(**)**
+HSPLcom/qytech/toolhub/data/AppLanguageManager;->**(**)**
+HSPLcom/qytech/toolhub/data/TelemetryRepository;->**(**)**
+HSPLcom/qytech/toolhub/data/HardwareRepository;->**(**)**
+HSPLcom/qytech/toolhub/data/OtgRepository;->**(**)**
+HSPLcom/qytech/toolhub/data/DeviceInfoRepository;->**(**)**
+HSPLcom/qytech/toolhub/data/DevControlsRepository;->**(**)**
+HSPLcom/qytech/toolhub/data/WebReportServer;->**(**)**

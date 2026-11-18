@@ -1,0 +1,661 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ToolHub</string>
+
+    <!-- 导航栏与页面标题 -->
+    <string name="nav_home">总览</string>
+    <string name="nav_otg">OTG</string>
+    <string name="nav_perf">性能</string>
+    <string name="nav_thermal">温控调频</string>
+    <string name="nav_audio">音频</string>
+    <string name="nav_device">设备</string>
+
+    <string name="title_home">ToolHub 控制台</string>
+    <string name="title_otg">OTG 节点与开机策略</string>
+    <string name="title_perf">CPU / GPU / 内存 / 硬盘</string>
+    <string name="title_thermal">温控与 CPU/GPU 调频锁频</string>
+    <string name="title_audio">ALSA 音频与板级节点</string>
+    <string name="title_device">设备与网络信息</string>
+
+    <!-- 通用操作 -->
+    <string name="action_refresh">刷新</string>
+    <string name="action_close">关闭</string>
+    <string name="action_cancel">取消</string>
+    <string name="action_copy">复制</string>
+    <string name="action_export">导出文件</string>
+    <string name="action_pause">暂停</string>
+    <string name="action_resume">恢复</string>
+    <string name="action_clear">清空</string>
+    <string name="action_reboot">重启</string>
+    <string name="action_stress_test">压力测试</string>
+    <string name="status_stress_running_fmt">压测中 %1$ds</string>
+    <string name="action_language">语言</string>
+
+    <!-- 总览页 -->
+    <string name="home_header_title">ToolHub 调试中枢</string>
+    <string name="home_loading_device">正在读取设备信息…</string>
+    <string name="home_copy_snapshot">复制快照</string>
+    <string name="home_crash_trace">异常回溯</string>
+    <string name="home_crash_trace_full">异常崩溃回溯</string>
+    <string name="home_web_report">Web 报告服务</string>
+    <string name="home_web_report_port_fmt">Web 报告 (:%1$d)</string>
+    <string name="home_aot_opt">AOT 编译优化</string>
+    <string name="home_network_diag">网络诊断 (Ping)</string>
+    <string name="home_adb_qr">ADB 扫码</string>
+    <string name="home_otg_title">OTG 模式</string>
+    <string name="home_adb_title">ADB 与无线调试</string>
+    <string name="home_boot_title">开机自启与常亮</string>
+    <string name="home_health_title">开发机体检清单</string>
+    <string name="home_health_sub">确认权限、节点与开机策略已就绪</string>
+    <string name="home_quick_title">网络、音频与系统入口</string>
+    <string name="home_device_detail">设备详情</string>
+    <string name="home_btn_perf">性能曲线</string>
+    <string name="home_btn_thermal">温控与调频</string>
+    <string name="home_btn_audio">音频节点</string>
+    <string name="home_btn_dev_opts">开发者选项</string>
+    <string name="home_btn_sys_settings">系统设置</string>
+    <string name="home_btn_device_specs">网络与规格</string>
+    <string name="home_reboot_confirm_title">确认重启设备？</string>
+    <string name="home_reboot_confirm_btn">确认重启</string>
+
+    <!-- 性能与温度页 -->
+    <string name="perf_header_title">性能实时曲线</string>
+    <string name="perf_cpu_title">CPU 占用率</string>
+    <string name="perf_gpu_title">GPU 负载</string>
+    <string name="perf_ram_title">内存占用 (RAM)</string>
+    <string name="perf_disk_title">硬盘读写 (Disk I/O)</string>
+    <string name="perf_gc_title">ART GC 垃圾回收</string>
+    <string name="perf_switch_to_gc">切至 GC</string>
+    <string name="perf_switch_to_disk">切至硬盘</string>
+
+    <string name="thermal_header_title">温控与 CPU/GPU 调频锁频</string>
+    <string name="thermal_chart_title">SoC / GPU 实时温度曲线</string>
+    <string name="thermal_sensors_title">全温区传感器读数</string>
+    <string name="thermal_cpufreq_title">CPU 调度与频点</string>
+
+    <!-- 音频与 OTG 页 -->
+    <string name="audio_header_title">ALSA 声卡与板级节点</string>
+    <string name="audio_alsa_title">ALSA 声卡 (/proc/asound)</string>
+    <string name="audio_devices_title">Android 音频输出设备</string>
+    <string name="audio_sysfs_title">板级 Sysfs 节点</string>
+
+    <string name="otg_header_title">OTG 模式与开机策略</string>
+    <string name="otg_nodes_title">可控 otg_mode 节点</string>
+    <string name="otg_usb_devices_title">USB Host 外设枚举</string>
+    <string name="otg_boot_policy_title">开机自启默认策略</string>
+
+    <!-- 设备信息页 -->
+    <string name="device_header_title">设备与网络信息</string>
+    <string name="device_header_sub">点按任意条目即可复制到剪贴板 · 网络状态实时监听</string>
+    <string name="device_copy_snapshot">复制诊断快照</string>
+    <string name="device_network_diag">网络诊断</string>
+    <string name="device_aot_short">AOT</string>
+    <string name="device_web_short">Web 报告</string>
+
+    <!-- 弹窗标题与核心按钮 -->
+    <string name="dlg_stress_title">系统压力测试 (Google SAT / CPU / 内存 / 温升)</string>
+    <string name="dlg_stress_start">开始压测</string>
+    <string name="dlg_stress_stop">停止压测</string>
+    <string name="dlg_stress_bg">后台继续压测</string>
+    <string name="dlg_stress_report">老化报告</string>
+    <string name="dlg_aging_title">硬件稳定性与老化测试报告</string>
+    <string name="dlg_crash_title">系统异常与死机崩溃回溯</string>
+    <string name="dlg_crash_export_summary">导出摘要报告</string>
+    <string name="dlg_crash_gen_zip">生成 Bugreport ZIP</string>
+    <string name="dlg_web_title">局域网 Web 报告中心</string>
+    <string name="dlg_aot_title">ART AOT 预编译优化</string>
+    <string name="dlg_aot_self">优化 ToolHub 自身</string>
+    <string name="dlg_aot_batch">一键全量 AOT (第三方应用)</string>
+
+    <!-- 首页/性能/设备补充文案 -->
+    <string name="home_verify_boot">验证开机策略</string>
+    <string name="home_view_logs">查看日志</string>
+    <string name="home_copy_ip_fmt">复制 IP (%1$s)</string>
+    <string name="perf_ram_used">RAM 已用</string>
+    <string name="perf_disk_read">读取</string>
+    <string name="perf_disk_write">写入</string>
+    <string name="perf_gc_heap">堆内存已用</string>
+    <string name="perf_gc_pause">GC 暂停</string>
+    <string name="device_specs_title">设备与系统信息</string>
+    <string name="device_board">主板 / 平台</string>
+    <string name="device_android_ver">Android 版本</string>
+    <string name="device_build_ver">系统版本号</string>
+    <string name="device_uid">当前进程 UID</string>
+    <string name="device_runtime_title">硬件规格与运行状态</string>
+    <string name="device_wifi_title">Wi-Fi 网络</string>
+    <string name="device_mac">MAC 地址</string>
+    <string name="device_eth_title">以太网%1$s</string>
+
+    <!-- contentDescription 与通用提示 -->
+    <string name="cd_refresh_all">刷新全部状态</string>
+    <string name="cd_refresh_device">刷新设备信息</string>
+    <string name="cd_refresh_thermal">刷新热区传感器</string>
+    <string name="cd_refresh_audio">刷新音频与节点状态</string>
+    <string name="cd_refresh_usb">刷新 USB 外设列表</string>
+    <string name="cd_refresh_nodes">重新扫描节点</string>
+    <string name="cd_refresh_crash">刷新异常记录</string>
+    <string name="cd_refresh_generic">刷新</string>
+    <string name="cd_clear_chart">清空历史曲线</string>
+    <string name="cd_clear_boot_logs">清空开机执行日志</string>
+    <string name="cd_copy_label_fmt">复制 %1$s</string>
+    <string name="cd_copy_node_path_fmt">复制节点路径 %1$s</string>
+    <string name="cd_delete_custom_node_fmt">删除自定义节点 %1$s</string>
+    <string name="cd_expand_fmt">展开 %1$s</string>
+    <string name="cd_collapse_fmt">收起 %1$s</string>
+    <string name="cd_web_qr">Web 报告中心二维码</string>
+    <string name="copied_toast_fmt">已复制 %1$s: %2$s</string>
+
+    <!-- 首页剩余文案 -->
+    <string name="home_reboot_msg_auto">设备将立即重启。当前已开启开机自启策略，重启后会自动恢复 OTG 模式与 ADB。</string>
+    <string name="home_reboot_msg_manual">设备将立即重启。注意当前未开启开机自动 OTG 策略。</string>
+    <string name="home_qr_title">ADB 扫码快速连接</string>
+    <string name="home_qr_hint">使用扫码枪或终端手机扫描，快速建立 ADB 连接</string>
+    <string name="home_otg_nodes_fmt">可控节点 %1$d 个 · 只读 %2$d 个</string>
+    <string name="home_usb_devices_fmt">USB 外设：%1$d 个</string>
+    <string name="home_adb_switch">ADB 总开关 (ADB_ENABLED)</string>
+    <string name="home_wifi_adb_switch">系统无线调试 (Wi-Fi ADB)</string>
+    <string name="home_boot_on">自启开</string>
+    <string name="home_boot_off">自启关</string>
+    <string name="home_stay_awake">充电/USB 保持常亮</string>
+    <string name="home_last_boot_fmt">最近开机: %1$s</string>
+    <string name="home_stay_awake_sub">Stay Awake (防测试休眠)</string>
+    <string name="home_all_ready">全部就绪</string>
+    <string name="home_checks_passed_fmt">%1$d/%2$d 通过</string>
+    <string name="home_audio_summary_fmt">ALSA 声卡 %1$d 张（活跃 %2$d）%3$s</string>
+    <string name="home_open_settings_err_fmt">无法打开系统设置: %1$s</string>
+    <string name="label_ip_address">IP 地址</string>
+    <string name="label_adb_cmd">ADB 连接命令</string>
+
+    <!-- 性能页面剩余文案 -->
+    <string name="perf_tab_disk">硬盘 I/O</string>
+    <string name="perf_header_sub_fmt">CPU / GPU / 内存 / %1$s · 采样 %2$d/%3$d 点</string>
+    <string name="perf_card4_disk">硬盘</string>
+    <string name="perf_card4_gc">GC</string>
+    <string name="perf_cpu_footer_fmt">负载: %1$s · %2$s</string>
+    <string name="perf_unavailable">不可用</string>
+    <string name="perf_gpu_footer_fmt">频率: %1$s · %2$s</string>
+    <string name="perf_ram_footer_fmt">已用 %1$s / 共 %2$s%3$s</string>
+    <string name="perf_disk_badge_fmt">读 %1$s · 写 %2$s</string>
+    <string name="perf_disk_extra_fmt">峰值 读 %1$s · 写 %2$s · %3$s</string>
+    <string name="perf_disk_footer_fmt">存储(/data): %1$s (%2$s) · 累计: 读 %3$s · 写 %4$s</string>
+    <string name="perf_gc_extra_fmt">ART 垃圾回收: 总数 %1$s · 耗时 %2$s · 阻塞 %3$s</string>
+    <string name="perf_gc_footer_fmt">JVM 堆占用: %1$s · 均值 %2$s</string>
+    <string name="perf_peak_avg_pct_fmt">峰值 %1$.1f%% · 均值 %2$.1f%%</string>
+
+    <!-- 温控页面剩余文案 -->
+    <string name="thermal_header_sub_fmt">SoC / GPU 实时温升趋势 · %1$d 个热区传感器 · %2$d 集群调度</string>
+    <string name="thermal_chart_stats_fmt">峰值 %1$.1f°C · 均值 %2$.1f°C · 采样 %3$d/%4$d</string>
+    <string name="thermal_chart_footer">高于 68°C 黄色预警，高于 80°C 红色高温告警（配合下方调频可观察是否触发降频）</string>
+    <string name="thermal_no_sensors">未发现可读温度传感器。</string>
+    <string name="thermal_cpufreq_sub">监控温控降频与调速器状态</string>
+    <string name="thermal_no_cpufreq">未检测到 cpufreq policy 节点。</string>
+
+    <!-- 设备页面剩余文案 -->
+    <string name="device_snapshot_label">环境诊断快照</string>
+    <string name="device_brand">品牌</string>
+    <string name="device_manufacturer">制造商</string>
+    <string name="device_model">型号</string>
+    <string name="device_serial">序列号</string>
+    <string name="device_cpu_abi">CPU 架构</string>
+    <string name="device_ram">运行内存</string>
+    <string name="device_storage">内部存储</string>
+    <string name="device_display">屏幕规格</string>
+    <string name="device_uptime">开机时长</string>
+    <string name="status_connected">已连接</string>
+    <string name="status_disconnected">未连接</string>
+    <string name="device_ipv4">IPv4 地址</string>
+    <string name="device_gateway">默认网关</string>
+    <string name="device_signal">信号强度</string>
+    <string name="device_link_speed">链路速率</string>
+    <string name="device_freq_band">工作频段</string>
+    <string name="device_no_eth">未检测到以太网网卡接口</string>
+    <string name="device_iface_name">接口名称</string>
+    <string name="signal_excellent">极好</string>
+    <string name="signal_good">良好</string>
+    <string name="signal_fair">一般</string>
+    <string name="signal_poor">较差</string>
+
+    <!-- 弹窗文案 -->
+    <string name="net_diag_title">网络连通性与 ADB 端口诊断</string>
+    <string name="net_adb_check">ADB 5555 端口自检</string>
+    <string name="net_ping_targets">快速选择 Ping 目标:</string>
+    <string name="net_ping_gateway_fmt">网关 (%1$s)</string>
+    <string name="net_ping_alidns">阿里 DNS (223.5.5.5)</string>
+    <string name="net_ping_googledns">谷歌 DNS (8.8.8.8)</string>
+    <string name="net_target_label">目标主机 IP / 域名</string>
+    <string name="net_ping_pass_fmt">Ping 测试通过 (%1$s)</string>
+    <string name="net_ping_fail">Ping 目标不可达</string>
+    <string name="net_ping_loss_fmt">丢包 %1$d%%</string>
+    <string name="net_ping_rtt_fmt">延迟: 最小 %1$.1f ms · 平均 %2$.1f ms · 最大 %3$.1f ms</string>
+    <string name="net_ping_err_fmt">错误: %1$s</string>
+    <string name="net_testing">测试中...</string>
+    <string name="net_start_ping">发起 Ping 测试</string>
+
+    <string name="aot_filter_third_party">第三方应用</string>
+    <string name="aot_filter_not_speed">未 Speed</string>
+    <string name="aot_filter_speed_only">已 Speed</string>
+    <string name="aot_filter_all">全部应用</string>
+    <string name="aot_speed_count_fmt">已 Speed: %1$d / %2$d</string>
+    <string name="aot_self_ok">✓ ToolHub 已完成 Speed AOT 编译</string>
+    <string name="aot_self_restricted">⚠ Android 14+ ART Service 需 root / adb shell 权限；ToolHub 已内置 baseline.prof 自动优化</string>
+    <string name="aot_compile_err_fmt">✗ 编译失败: %1$s</string>
+    <string name="aot_all_speed_ok">✓ 所有第三方应用均已完成 Speed AOT</string>
+    <string name="aot_compiling_fmt">正在对 %1$s 执行 AOT 编译...</string>
+    <string name="aot_search_hint">搜索应用名或包名</string>
+    <string name="aot_pkg_ok_fmt">✓ %1$s: %2$s 完成</string>
+    <string name="aot_pkg_restricted">⚠ Android 14+ ART Service 需 root / adb shell 权限 (UID 1000 受限)</string>
+    <string name="aot_pkg_err_fmt">✗ 失败: %1$s</string>
+    <string name="aot_reset">重置</string>
+
+    <string name="web_status_running_fmt">运行中 :%1$d</string>
+    <string name="web_status_stopped">已停止</string>
+    <string name="web_qr_hint">手机/平板扫码即开</string>
+    <string name="web_enable_switch">启用局域网 Web 服务</string>
+    <string name="web_url_label">Web 报告中心网址</string>
+    <string name="web_copy_link">复制链接</string>
+    <string name="web_usb_mounted_fmt">已接入 U盘: %1$s</string>
+    <string name="web_usb_none">未检测到外置 U盘</string>
+    <string name="web_usb_dir_fmt">导出报告将优先保存至: %1$s</string>
+    <string name="web_sdcard_dir">当前报告保存至 /sdcard/Download/，插入 U盘后自动切换至 U盘优先存储</string>
+    <string name="web_report_count_fmt">Web 端当前可查看/下载报告: %1$d 份</string>
+
+    <string name="qr_default_title">ADB 无线连接二维码</string>
+    <string name="qr_default_sub">支持扫码枪或局域网客户端扫码识别</string>
+    <string name="qr_copy_cmd">复制命令</string>
+
+    <string name="aging_pass">✓ PASS 合格</string>
+    <string name="aging_fail">✗ FAIL 未通过</string>
+    <string name="aging_duration_title">测试时长</string>
+    <string name="aging_target_sec_fmt">目标 %1$ds</string>
+    <string name="aging_continuous">持续压测</string>
+    <string name="aging_ddr_err_title">硬件/DDR错误</string>
+    <string name="aging_err_count_fmt">%1$d 次</string>
+    <string name="aging_ddr_ok">数据无损坏</string>
+    <string name="aging_ddr_bitflip">发现位翻转</string>
+    <string name="aging_max_temp_title">最高温升</string>
+    <string name="aging_cutoff_fmt">熔断线 %1$d°C</string>
+    <string name="aging_report_label">老化测试报告</string>
+    <string name="aging_copy_all">复制全文</string>
+    <string name="save_failed_fmt">保存失败: %1$s</string>
+
+    <!-- 压测弹窗与崩溃诊断 -->
+    <string name="stress_mode_sat">Google SAT 混合满载</string>
+    <string name="stress_mode_cpu">CPU 浮点</string>
+    <string name="stress_mode_mem">内存校验</string>
+    <string name="stress_cpu_cores">CPU 核心</string>
+    <string name="stress_all_cores_fmt">全核 (%1$d)</string>
+    <string name="stress_cores_fmt">%1$d 核</string>
+    <string name="stress_mem_size">内存容量</string>
+    <string name="stress_duration">持续时间</string>
+    <string name="stress_dur_20s">20秒</string>
+    <string name="stress_dur_1m">1分钟</string>
+    <string name="stress_dur_3m">3分钟</string>
+    <string name="stress_dur_cont">持续</string>
+    <string name="stress_running">压测中</string>
+    <string name="stress_idle">未运行</string>
+    <string name="stress_elapsed_fmt">已运行: %1$ds</string>
+    <string name="stress_cpu_stats_fmt">CPU 算力: %1$.1f MFLOPS · 已完成 %2$d 轮 Linpack 计算</string>
+    <string name="stress_sat_stats_fmt">SAT 内存吞吐: %1$.1f MB/s · 硬件/内存错误: %2$d</string>
+    <string name="stress_mem_stats_fmt">内存吞吐: %1$.1f MB/s · 已校验 %2$d 轮 · 错误计数: %3$d</string>
+
+    <string name="crash_tab_tombstone">Native 崩溃</string>
+    <string name="crash_tab_anr">应用无响应</string>
+    <string name="crash_tab_boot">开机与内核 Panic</string>
+    <string name="crash_abnormal_reboot">⚠ 异常死机重启</string>
+    <string name="crash_issues_count_fmt">%1$d 项异常记录</string>
+    <string name="crash_system_stable">系统运行稳定</string>
+    <string name="crash_export_err_fmt">导出失败: %1$s</string>
+    <string name="crash_no_tombstone">未检测到 /data/tombstones Native 崩溃记录</string>
+    <string name="crash_native_stable">C/C++ 原生层运行稳定无异常</string>
+    <string name="crash_proc_fmt">进程: %1$s (PID: %2$s, TID: %3$s)</string>
+    <string name="crash_signal_fmt">信号: %1$s</string>
+    <string name="crash_top_stack_fmt">栈顶: %1$s</string>
+    <string name="crash_collapse_stack">收起现场堆栈</string>
+    <string name="crash_expand_stack">查看崩溃上下文摘要 (前50行)</string>
+    <string name="crash_no_anr">未检测到系统 ANR 无响应记录</string>
+    <string name="crash_anr_stable">DropBox 与 /data/anr/ 无卡死痕迹</string>
+    <string name="crash_reason_fmt">原因: %1$s</string>
+    <string name="crash_collapse_trace">收起调用栈</string>
+    <string name="crash_expand_trace">查看主线程 Trace (前35行)</string>
+    <string name="crash_no_boot_info">未获取到开机原因信息</string>
+    <string name="crash_boot_diag">开机状态诊断</string>
+    <string name="crash_boot_panic">⚠ 异常死机/Panic 重启</string>
+    <string name="crash_boot_normal">✓ 正常开机/重启</string>
+    <string name="crash_pstore_title">PStore Ramoops 内存区</string>
+    <string name="crash_pstore_found">已捕获日志 (/sys/fs/pstore)</string>
+    <string name="crash_pstore_none">未检测到异常日志</string>
+    <string name="crash_kernel_excerpt_title">死机前内核最后输出 (console-ramoops-0)</string>
+    <string name="crash_kernel_log_label">内核崩溃日志</string>
+    <string name="crash_copy_kernel_log">复制内核日志</string>
+    <string name="crash_pstore_note_title">说明: /sys/fs/pstore/console-ramoops-0</string>
+    <string name="crash_pstore_note_body">当内核发生 Panic、死锁看门狗复位或硬件异常掉电时，Linux pstore 驱动会将死机前的内核 printk 缓冲写入预留物理 RAM 中，并在下次开机后呈现。当前系统未保留异常崩溃日志，说明最近一次为正常关机/重启。</string>
+
+    <!-- 音频页面文案 -->
+    <string name="audio_header_sub_fmt">ALSA 声卡 %1$d 张 · 输出路由 %2$d 个 · Sysfs 节点 %3$d 个</string>
+    <string name="audio_polling">轮询中 2s</string>
+    <string name="audio_auto_refresh">自动刷新</string>
+    <string name="audio_custom_node">自定义节点</string>
+    <string name="audio_edit_node_title">修改 Sysfs 节点</string>
+    <string name="audio_write_val_label">写入值</string>
+    <string name="audio_btn_write">写入</string>
+    <string name="audio_btn_delete_node">删除节点</string>
+    <string name="audio_add_node_title">添加自定义 Sysfs 节点</string>
+    <string name="audio_add_node_hint">请输入完整的 /sys/ 节点路径，App 将以 system (uid=1000) 权限读取并在可写时允许调节。</string>
+    <string name="audio_add_node_example">例如 /sys/class/leds/tube/brightness</string>
+    <string name="audio_btn_add">添加</string>
+    <string name="audio_alsa_card_fmt">ALSA 声卡 #%1$d (%2$s)</string>
+    <string name="audio_no_pcm">该声卡暂无活跃 PCM 流（设备未打开音频通路）。</string>
+    <string name="audio_pcm_status_fmt">状态: %1$s · 格式: %2$s · %3$s · %4$sch</string>
+    <string name="audio_out_name_fmt">名称: %1$s</string>
+    <string name="audio_out_rate_fmt">采样率: %1$s</string>
+    <string name="audio_out_enc_fmt">编码格式: %1$s</string>
+    <string name="audio_alsa_sub_fmt">活跃声卡 %1$d / %2$d（点击声卡查看 PCM 详情）</string>
+    <string name="audio_active_cnt_fmt">活跃 %1$d</string>
+    <string name="audio_idle">空闲</string>
+    <string name="audio_no_cards">未发现 /proc/asound/cards 声卡节点。</string>
+    <string name="audio_card_standby_fmt">待机 · %1$d 流就绪</string>
+    <string name="audio_props_title">AudioManager 输出与系统音频属性</string>
+    <string name="audio_props_sub">点击输出设备查看采样率/编码，点击属性可复制</string>
+    <string name="audio_no_outputs">无活跃输出设备</string>
+    <string name="audio_prop_usb_excl">USB 独占</string>
+    <string name="audio_prop_direct">Direct 输出设备</string>
+    <string name="audio_prop_i2s">I2S 模式</string>
+    <string name="audio_sysfs_sub_fmt">共 %1$d 个（可写 %2$d 个，uid=1000 直写）</string>
+    <string name="audio_writable_cnt_fmt">可写 %1$d</string>
+    <string name="audio_no_nodes">未扫描到可读取的板级 Sysfs 节点，可点击右上角“自定义节点”添加路径。</string>
+
+    <!-- OTG 页面文案 -->
+    <string name="otg_header_sub_fmt">可控 %1$d · 只读 %2$d · 切 HOST 会断 USB ADB（可用网络 ADB 或重启恢复）</string>
+    <string name="otg_all_otg">全部设为 OTG</string>
+    <string name="otg_all_host">全部设为 HOST</string>
+    <string name="otg_apply_policy">立即执行策略</string>
+    <string name="otg_boot_logs_fmt">开机策略执行日志 (%1$d)</string>
+    <string name="otg_no_logs">暂无执行记录。</string>
+    <string name="otg_clear_logs">清空日志</string>
+    <string name="otg_readonly_title_fmt">只读 OTG 节点 (%1$d)</string>
+    <string name="otg_readonly_hint">由 root 持有，点击节点可复制完整路径。</string>
+    <string name="otg_readonly_path_label">只读节点路径</string>
+    <string name="otg_node_path_label">节点路径</string>
+    <string name="otg_controllable_title">可控 OTG 节点</string>
+    <string name="otg_scanning">正在扫描系统 otg_mode 节点...</string>
+    <string name="otg_none_found">未找到任何 otg_mode 节点。</string>
+    <string name="otg_no_write_perm_fmt">共发现 %1$d 个 otg_mode 节点，但当前 UID 均无写权限（请确认 SystemSignature.jks 与 sharedUserId=android.uid.system）。</string>
+    <string name="otg_readonly_summary_fmt">只读 (%1$d): %2$s</string>
+    <string name="otg_details">详情</string>
+    <string name="otg_readonly_card_title_fmt">只读节点 (%1$d)</string>
+    <string name="otg_readonly_card_sub">由 root 持有，仅展示状态不参与写入</string>
+    <string name="otg_read_failed">读取失败</string>
+    <string name="otg_mode_otg_desc">OTG (设备/ADB)</string>
+    <string name="otg_mode_host_desc">HOST (外设供电)</string>
+    <string name="otg_unreadable">不可读</string>
+    <string name="otg_tcp_disabled">未启用 TCP 端口</string>
+    <string name="otg_adb_usb_title">ADB 与 USB 控制器状态</string>
+    <string name="otg_adb_master">USB 调试总开关 (ADB_ENABLED)</string>
+    <string name="otg_adb_master_sub">通过 WRITE_SECURE_SETTINGS 实时读写</string>
+    <string name="otg_net_adb">网络 ADB</string>
+    <string name="otg_boot_card_title">开机自启策略与执行日志</string>
+    <string name="otg_boot_card_sub">Direct Boot + BOOT_COMPLETED 自动生效</string>
+    <string name="otg_all_logs_fmt">全部日志 (%1$d)</string>
+    <string name="otg_pref_boot_otg">开机自动切换 OTG 模式</string>
+    <string name="otg_pref_boot_otg_sub">收到开机广播后将可控 otg_mode 设为 otg</string>
+    <string name="otg_pref_boot_adb">开机自动开启 ADB_ENABLED</string>
+    <string name="otg_pref_boot_adb_sub">确保 Settings.Global.ADB_ENABLED=1</string>
+    <string name="otg_pref_sync_adb">手动切换 OTG 时同步开启 ADB</string>
+    <string name="otg_pref_sync_adb_sub">切回 HOST 时保留当前 ADB 开关</string>
+    <string name="otg_recent_logs_fmt">最近执行记录 (%1$d)</string>
+    <string name="otg_no_logs_hint">暂无执行记录，点击“立即执行策略”可验证。</string>
+    <string name="otg_usb_title">USB Host 已接入外设</string>
+    <string name="otg_usb_sub">通过 UsbManager 实时枚举（切换 HOST 后可验证）</string>
+    <string name="otg_usb_count_fmt">%1$d 个</string>
+    <string name="otg_no_usb">当前未检测到 USB Host 外设（切换到 HOST 并插入 U盘 / DAC / 键鼠后实时更新）。</string>
+    <string name="otg_usb_item_sub_fmt">%1$s · %2$d 接口 · %3$s</string>
+    <string name="otg_usb_collapsed_fmt">其余 %1$d 个 USB 外设已折叠</string>
+
+    <!-- 体检清单 / 设备信息 / 硬件节点 / 遥测数据层文案 -->
+    <string name="health_uid_title">系统签名 UID</string>
+    <string name="health_uid_fail_fmt">当前 uid=%1$d，请使用 SystemSignature.jks 签名</string>
+    <string name="health_perm_title">系统权限就绪</string>
+    <string name="health_perm_missing">缺失</string>
+    <string name="health_otg_title">OTG 节点可写性</string>
+    <string name="health_otg_ok_fmt">已适配 %1$d 个可控节点（只读 %2$d 个）</string>
+    <string name="health_otg_fail">未发现当前 UID 可写的 otg_mode 节点</string>
+    <string name="health_boot_title">开机自启 OTG + ADB 策略</string>
+    <string name="health_boot_ok">已启用开机自动切换 OTG 并开启 ADB</string>
+    <string name="health_boot_fail">部分或全部开机策略开关已关闭</string>
+
+    <string name="val_unknown">未知</string>
+    <string name="val_no_network">未连接网络</string>
+    <string name="val_no_ip">未获取到 IP</string>
+    <string name="val_ssid_hidden">已连接 (无 SSID 权限或隐藏)</string>
+    <string name="ram_summary_fmt">%1$s 可用 / %2$s 总计 (已用 %3$s)</string>
+    <string name="storage_summary_fmt">%1$s 可用 / %2$s 总计</string>
+    <string name="uptime_dhm_fmt">%1$d天 %2$d小时 %3$d分钟</string>
+    <string name="uptime_hm_fmt">%1$d小时 %2$d分钟</string>
+    <string name="uptime_m_fmt">%1$d分钟</string>
+    <string name="gc_count_fmt">%1$d 次</string>
+    <string name="net_adb_ready_fmt">adbd 已成功绑定并在 0.0.0.0:%1$d 端口监听中 (就绪)</string>
+    <string name="net_adb_not_listening">5555 端口未处于 LISTEN 状态（请在总览开启无线/网络 ADB）</string>
+
+    <!-- Audio / USB / OTG 补充 -->
+    <string name="cd_edit_node_fmt">修改 %1$s</string>
+    <string name="cd_readonly">只读</string>
+    <string name="audio_adaptive">自适应</string>
+    <string name="audio_default_enc">默认</string>
+    <string name="audio_sys_device">系统音频设备</string>
+    <string name="audio_group_custom">自定义</string>
+    <string name="audio_type_speaker">内置扬声器</string>
+    <string name="audio_type_headset">有线耳麦</string>
+    <string name="audio_type_headphones">有线耳机</string>
+    <string name="audio_type_line_analog">模拟线路输出</string>
+    <string name="audio_type_line_digital">数字线路输出</string>
+    <string name="audio_type_usb_dev">USB 音频设备</string>
+    <string name="audio_type_usb_acc">USB 配件</string>
+    <string name="audio_type_usb_headset">USB 耳机/DAC</string>
+    <string name="audio_type_bt_a2dp">蓝牙 A2DP</string>
+    <string name="audio_type_bt_sco">蓝牙通话</string>
+    <string name="audio_type_earpiece">听筒</string>
+    <string name="audio_type_other_fmt">类型 %1$d</string>
+    <string name="usb_class_audio">音频 (Audio)</string>
+    <string name="usb_class_comm">通信 (CDC)</string>
+    <string name="usb_class_hid">人机交互 (HID)</string>
+    <string name="usb_class_storage">大容量存储</string>
+    <string name="usb_class_video">视频 (UVC)</string>
+    <string name="usb_class_ptp">图像 (PTP)</string>
+    <string name="usb_class_printer">打印机</string>
+    <string name="usb_class_vendor">厂商自定义</string>
+
+    <!-- ViewModel Snackbar/事件提示与状态文案 -->
+    <string name="err_no_permission">无权限</string>
+    <string name="err_unknown">未知错误</string>
+    <string name="hw_write_empty">写入值不能为空</string>
+    <string name="hw_write_ok_fmt">%1$s 已写入: %2$s</string>
+    <string name="hw_write_fail_fmt">写入 %1$s 失败: %2$s</string>
+    <string name="hw_invalid_path">请输入以 /sys/ 或 /proc/ 开头的有效节点路径</string>
+    <string name="hw_custom_added_fmt">已添加自定义节点：%1$s</string>
+    <string name="hw_custom_removed">已移除自定义节点</string>
+
+    <string name="otg_state_no_nodes">未检测到节点</string>
+    <string name="otg_state_no_writable">无可控节点</string>
+    <string name="otg_state_mixed_fmt">混合 (%1$s)</string>
+    <string name="otg_node_switched_fmt">%1$s 已切换为 %2$s</string>
+    <string name="otg_write_err_fmt">写入失败: %1$s</string>
+    <string name="otg_no_writable_nodes">没有可写入的 otg_mode 节点</string>
+    <string name="otg_adb_enabled_suffix"> + ADB 已开启</string>
+    <string name="otg_batch_switched_fmt">已将 %1$d 个可控节点切换为 %2$s%3$s</string>
+    <string name="otg_batch_partial_fail_fmt">部分节点切换失败: %1$s</string>
+    <string name="otg_host_wifi_adb_fmt">切至 HOST 模式可能导致有线 ADB 断开，已自动开启无线调试：adb connect %1$s:5555</string>
+    <string name="otg_device_ip_placeholder">设备IP</string>
+    <string name="otg_adb_on">ADB 调试已开启 (ADB_ENABLED=1)</string>
+    <string name="otg_adb_off">ADB 调试已关闭 (ADB_ENABLED=0)</string>
+    <string name="otg_adb_fail_fmt">修改 ADB_ENABLED 失败: %1$s</string>
+    <string name="otg_wifi_adb_on">系统无线调试已开启 (adb_wifi_enabled=1)</string>
+    <string name="otg_wifi_adb_off">系统无线调试已关闭</string>
+    <string name="otg_wifi_adb_fail">无线调试开关更新失败</string>
+    <string name="otg_stay_awake_on">已开启充电常亮 (Stay Awake)</string>
+    <string name="otg_stay_awake_off">已关闭充电常亮</string>
+    <string name="otg_stay_awake_fail_fmt">修改充电常亮失败: %1$s</string>
+    <string name="otg_reboot_fail_fmt">重启失败: %1$s</string>
+    <string name="otg_boot_otg_on">已启用开机自动切换 OTG</string>
+    <string name="otg_boot_otg_off">已关闭开机自动切换 OTG</string>
+    <string name="otg_boot_adb_on">已启用开机自动开启 ADB</string>
+    <string name="otg_boot_adb_off">已关闭开机自动开启 ADB</string>
+    <string name="otg_policy_ok_fmt">开机策略执行成功：%1$s</string>
+    <string name="otg_policy_warn_fmt">开机策略执行完成，存在告警：%1$s</string>
+    <string name="otg_boot_logs_cleared">已清空开机执行日志</string>
+    <string name="bugreport_collecting_pct_fmt">正在生成系统 Bugreport ZIP... %1$d%%</string>
+    <string name="bugreport_collecting_sec_fmt">正在收集系统 Bugreport ZIP... 已耗时 %1$ds (约需 30~90 秒)</string>
+
+    <!-- 剩余界面与后台任务状态文案 -->
+    <string name="perf_tab_gc">ART GC</string>
+    <string name="status_ready">就绪</string>
+    <string name="wifi_required_for_adb">请先连接 Wi-Fi 后再开启系统无线调试</string>
+    <string name="report_saved_usb_fmt">✓ 已优先保存至 U盘: %1$s (已同步本地副本)</string>
+    <string name="report_saved_local_fmt">✓ 报告已保存至内部存储: %1$s</string>
+    <string name="bugreport_failed_fmt">Bugreport 生成失败: %1$s</string>
+    <string name="bugreport_saved_usb_fmt">✓ Bugreport ZIP 已优先保存至 U 盘: %1$s</string>
+    <string name="bugreport_saved_local_fmt">✓ Bugreport ZIP 已生成: %1$s</string>
+    <string name="aot_batch_preparing_fmt">准备对 %1$d 个应用执行 %2$s...</string>
+    <string name="aot_batch_compiling_fmt">正在编译 (%1$d/%2$d): %3$s</string>
+    <string name="aot_batch_restricted">⚠ Android 14+ ART Service 限制：需通过 adb shell / root 触发全局编译 (UID 1000 受限)</string>
+    <string name="aot_batch_fail_fmt">✗ 批量 AOT 失败 (%1$d 个): %2$s</string>
+    <string name="aot_batch_done_fmt">✓ 批量 AOT 完成: 成功 %1$d 个%2$s</string>
+    <string name="aot_batch_skip_fmt"> · 跳过/失败 %1$d 个</string>
+    <string name="stress_status_running">压测进行中...</string>
+    <string name="stress_status_fallback">未找到原生 stressapptest，降级使用内置 Kotlin 引擎</string>
+    <string name="stress_status_overheat_fmt">过热保护触发：当前温度 %1$.1f°C ≥ 阈值 %2$.1f°C，已自动终止压测！</string>
+    <string name="stress_status_done_err_fmt">压测完成但发现 %1$d 处内存/硬件错误！</string>
+    <string name="stress_status_done_ok_fmt">压测已完成（共运行 %1$ds，无硬件错误）</string>
+    <string name="stress_status_sat_pass">SAT 严苛测试通过 (PASS)</string>
+    <string name="stress_status_sat_fail">SAT 测试未通过 (FAIL: 检测到错误)</string>
+    <string name="stress_status_sat_start">SAT 测试已启动...</string>
+    <string name="stress_status_sat_err_fmt">执行 SAT 出错: %1$s</string>
+    <string name="stress_status_mem_cap_fmt">内存分配受限，已降级为 %1$d MB 测试</string>
+    <string name="stress_status_stopped">压测已手动停止</string>
+
+    <!-- 兜底/错误/存储卷标签 -->
+    <string name="gpu_no_devfreq">未检测到 GPU devfreq</string>
+    <string name="err_path_not_found">路径不存在</string>
+    <string name="err_no_read_perm">无读取权限</string>
+    <string name="usb_device_fallback">USB 外设</string>
+    <string name="web_port_busy_fmt">端口 %1$d~%2$d 均被占用</string>
+    <string name="storage_usb_label_fmt">U盘 (%1$s)</string>
+    <string name="storage_ext_label_fmt">外置存储 (%1$s)</string>
+    <string name="storage_internal_label">内部存储 (Download)</string>
+
+    <!-- Web Server & Storage & Diagnostics Messages -->
+    <string name="web_msg_switch_nodes_fmt">已将 %1$d 个节点切换为 %2$s</string>
+    <string name="web_msg_no_writable_otg">未找到可写 OTG 节点</string>
+    <string name="web_msg_node_invalid">节点不可写或不存在</string>
+    <string name="web_msg_node_switched_fmt">节点已切换至 %1$s</string>
+    <string name="web_msg_node_switch_failed_fmt">切换失败: %1$s</string>
+    <string name="web_msg_adb_toggled_fmt">ADB 已%1$s</string>
+    <string name="web_msg_wifi_adb_toggled_fmt">无线调试已%1$s</string>
+    <string name="web_msg_stay_awake_toggled_fmt">充电常亮已%1$s</string>
+    <string name="web_msg_boot_policy_updated">开机自启策略已更新</string>
+    <string name="web_msg_sysfs_invalid">Sysfs 节点不存在或不可写</string>
+    <string name="web_msg_sysfs_written_fmt">已写入 %1$s = %2$s</string>
+    <string name="web_msg_sysfs_write_failed_fmt">写入失败: %1$s</string>
+    <string name="web_msg_stress_started_fmt">已启动 %1$s 压测</string>
+    <string name="web_msg_stress_stopped">已发送停止压测指令</string>
+    <string name="web_msg_no_aging_report">尚无可导出的老化报告</string>
+    <string name="web_msg_bugreport_started">已启动系统 Bugreport ZIP 收集（约需 30~90 秒）</string>
+    <string name="web_msg_no_output">无输出</string>
+    <string name="web_msg_rebooting">设备即将重启...</string>
+    <string name="web_msg_read_failed_fmt">读取失败: %1$s</string>
+    <string name="action_enabled">开启</string>
+    <string name="action_disabled">关闭</string>
+    <string name="action_failed_fmt">操作失败: %1$s</string>
+    <string name="storage_internal">内部存储</string>
+    <string name="storage_system_bugreports">系统 /bugreports</string>
+    <string name="storage_shell_bugreports">系统 shell bugreports</string>
+    <string name="unknown_app">未知应用</string>
+    <string name="otg_boot_log_no_nodes">未检测到任何 otg_mode 节点</string>
+    <string name="otg_boot_log_ro_nodes_fmt">检测到 %1$d 个只读节点，但无系统写权限节点</string>
+    <string name="otg_boot_log_already_otg_fmt">%1$s: 已是 otg</string>
+    <string name="otg_boot_log_write_failed_fmt">%1$s: 写入失败 (%2$s)</string>
+    <string name="otg_boot_log_skipped_otg">已跳过 (开机自动 OTG 开关已关闭)</string>
+    <string name="otg_boot_log_adb_write_failed_fmt">ADB_ENABLED 设置失败: %1$s</string>
+    <string name="otg_boot_log_adb_already_on">ADB_ENABLED 已是 1</string>
+    <string name="otg_boot_log_skipped_adb">ADB 已跳过 (开机自动 ADB 开关已关闭)</string>
+    <string name="otg_writable">可写</string>
+    <string name="otg_read_only">只读</string>
+    <string name="home_env_snapshot">环境诊断快照</string>
+    <string name="report_type_aging">老化稳定性测试报告</string>
+    <string name="report_type_crash">系统异常与崩溃回溯</string>
+    <string name="report_type_bugreport">系统 Bugreport ZIP</string>
+    <string name="report_type_tombstone">Native 崩溃栈 (Tombstone)</string>
+    <string name="report_type_unknown">未知报告</string>
+
+    <!-- 音频信号发生器 / 屏幕触控检测 / 系统属性 / 调频新增文案 -->
+    <string name="tone_btn_open">测试音源</string>
+    <string name="tone_dlg_title">数字测试信号发生器 (Audio Tone)</string>
+    <string name="tone_dlg_sub">输出纯净正弦波/扫频/白噪，实时核验 ALSA 声卡通路与采样率</string>
+    <string name="tone_sec_waveform">测试波形与频点</string>
+    <string name="tone_sec_channel">声道相位模式</string>
+    <string name="tone_sec_rate">目标采样率</string>
+    <string name="tone_sec_level">数字电平 (dBFS)</string>
+    <string name="tone_alsa_verify_title">ALSA 声卡硬件状态实时核验 (/proc/asound)</string>
+    <string name="tone_alsa_idle">当前无活跃 ALSA PCM 流（点击开始播放后将显示硬件实际锁定采样率与位深）</string>
+    <string name="tone_btn_start">开始播放测试音</string>
+    <string name="tone_btn_stop">停止播放</string>
+    <string name="tone_wave_1k">1 kHz 基准音</string>
+    <string name="tone_wave_440">440 Hz 标准音</string>
+    <string name="tone_wave_100">100 Hz 低频</string>
+    <string name="tone_wave_10k">10 kHz 高频</string>
+    <string name="tone_wave_sweep">20~20kHz 扫频</string>
+    <string name="tone_wave_noise">白噪声 (老化)</string>
+    <string name="tone_ch_stereo">双声道立体声</string>
+    <string name="tone_ch_left">仅左声道 (L)</string>
+    <string name="tone_ch_right">仅右声道 (R)</string>
+    <string name="tone_ch_invert">左右反相 (180°)</string>
+
+    <string name="home_btn_sysprop">系统属性</string>
+    <string name="home_btn_screen_tp">屏幕与触控</string>
+
+    <string name="cpufreq_btn_tune">调频/锁频</string>
+    <string name="cpufreq_dlg_title">CPU / GPU 调速器与锁频控制台</string>
+    <string name="cpufreq_all_clusters">全集群 CPU 一键切换调速器 (Governor)</string>
+    <string name="cpufreq_governor_label">集群调速器 (scaling_governor)</string>
+    <string name="cpufreq_lock_freq_label">点击频点锁定频率</string>
+    <string name="cpufreq_unlock_range">恢复全频段动态</string>
+
+    <string name="screen_pat_red">纯红 (坏点检测)</string>
+    <string name="screen_pat_green">纯绿 (坏点检测)</string>
+    <string name="screen_pat_blue">纯蓝 (坏点检测)</string>
+    <string name="screen_pat_white">纯白 (背光均匀度)</string>
+    <string name="screen_pat_black">纯黑 (漏光检测)</string>
+    <string name="screen_pat_gray">50% 中性灰 (残影/闪烁)</string>
+    <string name="screen_pat_bars">SMPTE 彩条</string>
+    <string name="screen_pat_gradient">灰阶过渡</string>
+    <string name="screen_pat_grid">几何网格与对齐</string>
+    <string name="screen_tap_hint">轻触屏幕切换下一图案</string>
+    <string name="screen_hide_hud">隐藏控制栏</string>
+    <string name="screen_mode_tp">切至 TP 触控划线</string>
+    <string name="screen_mode_display">切至屏幕显示检测</string>
+    <string name="tp_status_fmt">边缘网格: %1$d/%2$d (%3$d%%) · 触点: %4$d · %5$s</string>
+
+    <string name="prop_cat_all">全部</string>
+    <string name="prop_cat_writable">可写属性</string>
+    <string name="prop_cat_persist">persist.*</string>
+    <string name="prop_cat_vendor">vendor / audio / sys</string>
+    <string name="prop_cat_ro">ro.* (只读)</string>
+    <string name="prop_dlg_title">Android 系统属性浏览器 (getprop / setprop)</string>
+    <string name="prop_dlg_sub_fmt">显示 %1$d / 共 %2$d 项 · 点击 RW 属性可直接修改</string>
+    <string name="prop_search_hint">搜索属性名或属性值 (例如 usb, audio, rk, adb)...</string>
+    <string name="prop_edit_title">设置系统属性 (setprop)</string>
+    <string name="audio_confirm_write">确认写入</string>
+    <string name="web_pin_lock">Web 控制 PIN 码保护</string>
+    <string name="web_pin_error">PIN 码校验失败，请在网页右上角输入正确的 PIN 码</string>
+    <string name="nav_tools">工具</string>
+    <string name="tools_header_title">诊断与产线工具</string>
+    <string name="tools_header_sub">集中管理压测、AOT 编译、系统属性、屏幕触控、网络与崩溃诊断工具</string>
+    <string name="tools_desc_stress">CPU/内存高负载烤机与老化测试报告导出</string>
+    <string name="tools_desc_aot">应用 ART dexopt 预编译状态查看与一键加速</string>
+    <string name="tools_desc_sysprop">浏览、搜索并修改 Android 系统属性 (getprop / setprop)</string>
+    <string name="tools_desc_screen">屏幕坏点纯色切换、灰阶检测与多指 TP 画线测试</string>
+    <string name="tools_desc_net">网关、DNS 与外网连通性一键 Ping 诊断</string>
+    <string name="tools_desc_crash">Native Tombstone、ANR、ramoops 与 Bugreport 收集</string>
+    <string name="tools_desc_web">局域网 HTTP 控制台、端口状态与 PIN 鉴权设置</string>
+    <string name="tools_desc_audio">正弦波/扫频/白噪声数字测试信号输出核验</string>
+    <string name="tools_desc_qr">生成当前局域网无线 ADB 连接二维码</string>
+</resources>
