@@ -137,3 +137,28 @@ jobs:
             -F "access_token=${GITEE_TOKEN}" \
             -F "file=@${APK_FILE}" >/dev/null
           echo "Uploaded ${APK_FILE} to Gitee Release ${TAG} (id=${REL_ID})"
+
+  web-and-server-check:
+    name: Web Build & Rust Server Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: apps/web/package-lock.json
+
+      - name: Install & build Web console
+        run: |
+          npm ci --prefix apps/web
+          npm run build:web
+
+      - name: Set up Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Check Rust fleet server
+        run: cargo check -p toolhub-fleet

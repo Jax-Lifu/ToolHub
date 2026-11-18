@@ -30,6 +30,7 @@ import java.net.DatagramPacket
 import java.net.DatagramSocket
 import java.net.HttpURLConnection
 import java.net.NetworkInterface
+import java.net.URI
 import java.net.URL
 import kotlin.math.abs
 
@@ -52,6 +53,7 @@ data class FleetHeartbeatPayload(
     val stressRunning: Boolean,
     val socTempC: Float?,
     val uptime: String,
+    val sshPubKey: String? = null,
 )
 
 data class RemoteFleetConfig(
@@ -127,13 +129,20 @@ object RemoteFleetRepository {
         val prefs = appCtx.createDeviceProtectedStorageContext()
             .getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         val hasBuildDefault = BuildConfig.DEFAULT_FLEET_URL.isNotBlank()
+        val serverUrl = prefs.getString(KEY_SERVER_URL, null)
+            ?.takeIf { it.isNotBlank() } ?: BuildConfig.DEFAULT_FLEET_URL
+        val configuredSshHost = prefs.getString(KEY_SSH_HOST, "") ?: ""
+        val derivedSshHost = if (configuredSshHost.isBlank() && serverUrl.isNotBlank()) {
+            runCatching { URI(serverUrl).host ?: "" }.getOrDefault("")
+        } else {
+            configuredSshHost
+        }
         val cfg = RemoteFleetConfig(
             enabled = if (prefs.contains(KEY_ENABLED)) prefs.getBoolean(KEY_ENABLED, false) else hasBuildDefault,
-            fleetServerUrl = prefs.getString(KEY_SERVER_URL, null)
-                ?.takeIf { it.isNotBlank() } ?: BuildConfig.DEFAULT_FLEET_URL,
+            fleetServerUrl = serverUrl,
             deviceToken = prefs.getString(KEY_DEVICE_TOKEN, null)
                 ?.takeIf { it.isNotBlank() } ?: BuildConfig.DEFAULT_DEVICE_TOKEN,
-            sshHost = prefs.getString(KEY_SSH_HOST, "") ?: "",
+            sshHost = derivedSshHost,
             sshPort = prefs.getInt(KEY_SSH_PORT, 22),
             sshUser = prefs.getString(KEY_SSH_USER, "toolhub-relay") ?: "toolhub-relay",
             remoteWebPort = prefs.getInt(KEY_WEB_PORT, defaultWebPort),
@@ -436,6 +445,7 @@ object RemoteFleetRepository {
             stressRunning = StressTestRepository.state.value.isRunning,
             socTempC = thermalSample.socCelsius,
             uptime = uptimeStr,
+            sshPubKey = _state.value.publicKeyOpenSsh.takeIf { it.isNotBlank() },
         )
     }
 

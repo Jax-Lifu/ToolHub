@@ -147,7 +147,7 @@ internal object WsReverseTunnelClient {
             val conn = (url.openConnection() as HttpURLConnection).apply {
                 requestMethod = method
                 connectTimeout = 10_000
-                readTimeout = 20_000
+                readTimeout = 45_000
                 if (headersObj != null) {
                     val keys = headersObj.keys()
                     while (keys.hasNext()) {
@@ -175,16 +175,42 @@ internal object WsReverseTunnelClient {
             respBytes = (err.message ?: "Local proxy error").toByteArray(Charsets.UTF_8)
         }
 
-        val respJson = JSONObject().apply {
-            put("type", "http_resp")
-            put("id", reqId)
-            put("status", status)
-            put("headers", respHeaders)
-            put("bodyB64", Base64.encodeToString(respBytes, Base64.NO_WRAP))
-        }.toString()
+        val chunkLimit = 192 * 1024 // multiple of 3 for clean Base64 chunking
+        if (respBytes.size <= chunkLimit) {
+            val respJson = JSONObject().apply {
+                put("type", "http_resp")
+                put("id", reqId)
+                put("status", status)
+                put("headers", respHeaders)
+                put("bodyB64", Base64.encodeToString(respBytes, Base64.NO_WRAP))
+            }.toString()
 
-        runCatching {
-            sendFrame(output, writeLock, 0x1, respJson.toByteArray(Charsets.UTF_8))
+            runCatching {
+                sendFrame(output, writeLock, 0x1, respJson.toByteArray(Charsets.UTF_8))
+            }
+            return
+        }
+
+        var offset = 0
+        while (offset < respBytes.size) {
+            val len = minOf(chunkLimit, respBytes.size - offset)
+            val isFirst = offset == 0
+            val isLast = offset + len >= respBytes.size
+            val chunkB64 = Base64.encodeToString(respBytes, offset, len, Base64.NO_WRAP)
+            val chunkJson = JSONObject().apply {
+                put("type", "http_resp_chunk")
+                put("id", reqId)
+                put("status", if (isFirst) status else 0)
+                put("headers", if (isFirst) respHeaders else JSONObject())
+                put("bodyB64", chunkB64)
+                put("eof", isLast)
+            }.toString()
+
+            val ok = runCatching {
+                sendFrame(output, writeLock, 0x1, chunkJson.toByteArray(Charsets.UTF_8))
+            }.isSuccess
+            if (!ok) break
+            offset += len
         }
     }
 

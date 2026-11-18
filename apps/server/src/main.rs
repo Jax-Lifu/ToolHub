@@ -298,6 +298,21 @@ async fn main() {
         }
     });
 
+    if let Some(webhook_url) = env::var("FLEET_ALERT_WEBHOOK")
+        .ok()
+        .map(|s| s.trim().to_string())
+        .filter(|s| !s.is_empty())
+    {
+        let temp_threshold = env::var("FLEET_ALERT_TEMP_C")
+            .ok()
+            .and_then(|v| v.parse::<f32>().ok())
+            .unwrap_or(80.0);
+        let alert_state = state.clone();
+        tokio::spawn(async move {
+            run_alert_monitor(alert_state, webhook_url, temp_threshold).await;
+        });
+    }
+
     let app = Router::new()
         .route("/api/health", get(|| async { Json(serde_json::json!({"ok": true})) }))
         .route("/api/auth/login", post(handle_login))
@@ -1191,4 +1206,74 @@ async fn proxy_to_device(
         }
     }
     out_resp
+}
+
+async fn run_alert_monitor(state: AppState, webhook_url: String, temp_threshold_c: f32) {
+    let mut was_online: HashMap<String, bool> = HashMap::new();
+    let mut last_alert_epoch: HashMap<String, i64> = HashMap::new();
+    const COOLDOWN_SEC: i64 = 900;
+
+    loop {
+        tokio::time::sleep(std::time::Duration::from_secs(30)).await;
+        let now = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .map(|d| d.as_secs() as i64)
+            .unwrap_or(0);
+
+        let devices: Vec<DeviceRecord> = state.devices.read().await.values().cloned().collect();
+        let ws_keys: std::collections::HashSet<String> = {
+            state.ws_tunnels.read().await.keys().cloned().collect()
+        };
+
+        let mut alerts: Vec<String> = Vec::new();
+        for dev in devices {
+            let ws_up = ws_keys.contains(&dev.mac);
+            let online = ws_up || (now - dev.last_seen_epoch <= 30);
+            let label = if dev.alias.trim().is_empty() {
+                format!("{} ({})", dev.model, dev.mac)
+            } else {
+                format!("{} [{}]", dev.alias, dev.mac)
+            };
+
+            if was_online.get(&dev.mac).copied() == Some(true) && !online {
+                let key = format!("offline:{}", dev.mac);
+                let prev = last_alert_epoch.get(&key).copied().unwrap_or(0);
+                if now - prev >= COOLDOWN_SEC {
+                    last_alert_epoch.insert(key, now);
+                    alerts.push(format!("[ToolHub Alert] Device OFFLINE: {}", label));
+                }
+            }
+            was_online.insert(dev.mac.clone(), online);
+
+            if online {
+                if let Some(temp) = dev.soc_temp_c {
+                    if temp >= temp_threshold_c {
+                        let key = format!("overheat:{}", dev.mac);
+                        let prev = last_alert_epoch.get(&key).copied().unwrap_or(0);
+                        if now - prev >= COOLDOWN_SEC {
+                            last_alert_epoch.insert(key, now);
+                            alerts.push(format!(
+                                "[ToolHub Alert] High SoC Temp: {} reached {:.1}°C (threshold {:.1}°C)",
+                                label, temp, temp_threshold_c
+                            ));
+                        }
+                    }
+                }
+            }
+        }
+
+        for msg in alerts {
+            let body = serde_json::json!({
+                "msgtype": "text",
+                "text": { "content": msg }
+            });
+            let _ = state
+                .http_client
+                .post(&webhook_url)
+                .header("Content-Type", "application/json")
+                .body(body.to_string())
+                .send()
+                .await;
+        }
+    }
 }

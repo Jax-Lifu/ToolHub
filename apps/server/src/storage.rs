@@ -32,6 +32,19 @@ fn sanitize_mac_filename(mac: &str) -> String {
         .collect()
 }
 
+fn prune_jsonl_if_needed(file_path: &Path, max_lines: usize, keep_lines: usize) {
+    let Ok(raw) = fs::read_to_string(file_path) else {
+        return;
+    };
+    let lines: Vec<&str> = raw.lines().filter(|l| !l.trim().is_empty()).collect();
+    if lines.len() <= max_lines {
+        return;
+    }
+    let start = lines.len().saturating_sub(keep_lines);
+    let trimmed = format!("{}\n", lines[start..].join("\n"));
+    let _ = fs::write(file_path, trimmed);
+}
+
 pub fn append_telemetry_point(history_dir: &Path, mac: &str, point: &TelemetryPoint) {
     if fs::create_dir_all(history_dir).is_err() {
         return;
@@ -41,6 +54,7 @@ pub fn append_telemetry_point(history_dir: &Path, mac: &str, point: &TelemetryPo
         if let Ok(mut f) = OpenOptions::new().create(true).append(true).open(&file_path) {
             let _ = writeln!(f, "{line}");
         }
+        prune_jsonl_if_needed(&file_path, 3000, 2880);
     }
 }
 
@@ -67,6 +81,7 @@ pub fn append_audit_entry(audit_file: &Path, entry: &AuditEntry) {
         if let Ok(mut f) = OpenOptions::new().create(true).append(true).open(audit_file) {
             let _ = writeln!(f, "{line}");
         }
+        prune_jsonl_if_needed(audit_file, 2500, 2000);
     }
 }
 
