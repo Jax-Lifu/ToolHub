@@ -221,21 +221,25 @@ object RemoteFleetRepository {
     private fun ensureKeyPair(appCtx: Context): String {
         val privFile = File(appCtx.filesDir, PRIV_KEY_NAME)
         val pubFile = File(appCtx.filesDir, PUB_KEY_NAME)
-        if (!privFile.exists() || !pubFile.exists()) {
+        val existingPub = runCatching { pubFile.readText(Charsets.UTF_8).trim() }.getOrDefault("")
+        val needsRegen = !privFile.exists() || !pubFile.exists() || !existingPub.startsWith("ecdsa-sha2-")
+        if (needsRegen) {
             runCatching {
                 val jsch = JSch()
-                val kp = KeyPair.genKeyPair(jsch, KeyPair.ED25519)
+                val kp = KeyPair.genKeyPair(jsch, KeyPair.ECDSA, 256)
                 kp.writePrivateKey(privFile.absolutePath)
                 kp.writePublicKey(pubFile.absolutePath, "toolhub-${resolveDeviceSerial(appCtx)}")
                 kp.dispose()
             }.onFailure { err ->
-                Log.e(TAG, "Failed to generate Ed25519 keypair", err)
+                Log.e(TAG, "Failed to generate ECDSA keypair", err)
             }
         }
         return runCatching { pubFile.readText(Charsets.UTF_8).trim() }.getOrDefault("")
     }
 
+    @Synchronized
     private fun startWorkers(appCtx: Context) {
+        stopWorkers()
         val cfg = _state.value.config
         if (cfg.fleetServerUrl.isNotBlank()) {
             wsTunnelJob = scope.launch { runWsTunnelLoop(appCtx) }
@@ -246,6 +250,18 @@ object RemoteFleetRepository {
         }
     }
 
+    private fun ensureAdbTcpEnabled() {
+        runCatching {
+            val current = SystemPropertiesHelper.get("service.adb.tcp.port").trim()
+            if (current.isEmpty() || current == "-1" || current == "0") {
+                SystemPropertiesHelper.set("service.adb.tcp.port", "5555")
+                SystemPropertiesHelper.set("ctl.restart", "adbd")
+                Log.i(TAG, "Enabled TCP ADB on port 5555 for remote tunnel")
+            }
+        }
+    }
+
+    @Synchronized
     private fun stopWorkers() {
         tunnelJob?.cancel()
         tunnelJob = null
@@ -305,8 +321,15 @@ object RemoteFleetRepository {
                     }
                 }
             }
-            delay(backoffMs)
-            backoffMs = (backoffMs * 2).coerceAtMost(30_000L)
+            val waitMs = if (err?.message?.contains("Auth fail") == true ||
+                err?.message?.contains("forwarding failed") == true
+            ) {
+                maxOf(backoffMs, 15_000L)
+            } else {
+                backoffMs
+            }
+            delay(waitMs)
+            backoffMs = (waitMs * 2).coerceAtMost(60_000L)
         }
     }
 
@@ -337,6 +360,7 @@ object RemoteFleetRepository {
                 activeSession = session
 
                 val localWebPort = WebReportServer.state.value.port
+                ensureAdbTcpEnabled()
                 session.setPortForwardingR("127.0.0.1", cfg.remoteWebPort, "127.0.0.1", localWebPort)
                 session.setPortForwardingR("127.0.0.1", cfg.remoteAdbPort, "127.0.0.1", 5555)
 
@@ -367,8 +391,15 @@ object RemoteFleetRepository {
                     )
                 }
             }
-            delay(backoffMs)
-            backoffMs = (backoffMs * 2).coerceAtMost(30_000L)
+            val waitMs = if (err?.message?.contains("Auth fail") == true ||
+                err?.message?.contains("forwarding failed") == true
+            ) {
+                maxOf(backoffMs, 15_000L)
+            } else {
+                backoffMs
+            }
+            delay(waitMs)
+            backoffMs = (waitMs * 2).coerceAtMost(60_000L)
         }
     }
 

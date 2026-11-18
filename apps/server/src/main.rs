@@ -921,9 +921,10 @@ async fn handle_list_devices(
             let ago = (now - rec.last_seen_epoch).max(0);
             let ws_connected = ws_tunnels.contains_key(&rec.mac);
             let online = ws_connected || ago <= 45;
+            let local_port = if rec.tunnel_adb_port > 0 { rec.tunnel_adb_port } else { rec.adb_port };
             let adb_cmd = format!(
-                "ssh -N -L {}:127.0.0.1:{} {}@{} && adb connect 127.0.0.1:{}",
-                rec.adb_port, rec.tunnel_adb_port, state.ssh_user, state.ssh_host, rec.adb_port
+                "ssh -f -N -L {}:127.0.0.1:{} {}@{} && adb connect 127.0.0.1:{}",
+                local_port, rec.tunnel_adb_port, state.ssh_user, state.ssh_host, local_port
             );
             DeviceView {
                 record: rec,

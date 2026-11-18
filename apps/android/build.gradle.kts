@@ -44,8 +44,8 @@ android {
         applicationId = "com.qytech.toolhub"
         minSdk = 31
         targetSdk = 37
-        versionCode = 10007
-        versionName = "0.0.7"
+        versionCode = 10008
+        versionName = "0.0.8"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 

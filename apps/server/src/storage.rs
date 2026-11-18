@@ -104,9 +104,14 @@ pub fn ensure_ssh_authorized_key(relay_user: &str, pub_key: &str) -> Result<bool
         return Err("empty or multiline key".into());
     }
     let parts: Vec<&str> = trimmed.split_whitespace().collect();
-    if parts.len() < 2 || parts[0] != "ssh-ed25519" {
-        return Err("only ssh-ed25519 keys are accepted".into());
+    let valid_prefix = matches!(
+        parts.first().copied(),
+        Some("ssh-ed25519" | "ecdsa-sha2-nistp256" | "ecdsa-sha2-nistp384" | "ecdsa-sha2-nistp521" | "ssh-rsa")
+    );
+    if parts.len() < 2 || !valid_prefix {
+        return Err("unsupported ssh public key type".into());
     }
+    let key_type = parts[0];
     let key_b64 = parts[1];
     if !key_b64
         .bytes()
@@ -132,7 +137,7 @@ pub fn ensure_ssh_authorized_key(relay_user: &str, pub_key: &str) -> Result<bool
                 .collect::<String>()
         })
         .unwrap_or_else(|| "toolhub-device".to_string());
-    let line = format!("ssh-ed25519 {key_b64} {comment}");
+    let line = format!("{key_type} {key_b64} {comment}");
     let mut f = OpenOptions::new()
         .create(true)
         .append(true)
