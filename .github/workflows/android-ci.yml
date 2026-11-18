@@ -45,7 +45,7 @@ jobs:
         env:
           TOOLHUB_KEYSTORE_FILE: ${{ secrets.TOOLHUB_KEYSTORE_BASE64 != '' && 'signing.jks' || '' }}
           TOOLHUB_KEYSTORE_PASSWORD: ${{ secrets.TOOLHUB_KEYSTORE_PASSWORD }}
-          TOOLHUB_KEY_ALIAS: ${{ secrets.TOOLHUB_KEY_ALIAS }}
+          TOOLHUB_KEY_ALIAS: ${{ secrets.TOOLHUB_KEYSTORE_ALIAS }}
           TOOLHUB_KEY_PASSWORD: ${{ secrets.TOOLHUB_KEY_PASSWORD }}
         run: ./gradlew :app:assembleRelease
 

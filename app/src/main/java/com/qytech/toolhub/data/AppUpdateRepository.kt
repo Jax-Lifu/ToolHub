@@ -75,7 +75,7 @@ data class AppUpdateState(
 
 object AppUpdateRepository {
     private const val TAG = "AppUpdateRepository"
-    private const val LATEST_RELEASE_API = "https://api.github.com/repos/Jax-Lifu/ToolHub/releases/latest"
+    private const val LATEST_RELEASE_API = "https://api.github.com/repos/qytech/ToolHub/releases/latest"
     private const val ACTION_INSTALL_RESULT = "com.qytech.toolhub.ACTION_SELF_UPDATE_RESULT"
 
     private val json = Json { ignoreUnknownKeys = true }

@@ -24,11 +24,12 @@ android {
             val ksFile = ksPath?.let { rootProject.file(it) }
             if (ksFile != null && ksFile.exists()) {
                 storeFile = ksFile
-                storePassword = System.getenv("TOOLHUB_KEYSTORE_PASSWORD")
+                storePassword = System.getenv("TOOLHUB_KEYSTORE_PASSWORD")?.takeIf { it.isNotBlank() }
                     ?: keystoreProps.getProperty("storePassword")
-                keyAlias = System.getenv("TOOLHUB_KEY_ALIAS")
+                keyAlias = (System.getenv("TOOLHUB_KEY_ALIAS") ?: System.getenv("TOOLHUB_KEYSTORE_ALIAS"))
+                    ?.takeIf { it.isNotBlank() }
                     ?: keystoreProps.getProperty("keyAlias")
-                keyPassword = System.getenv("TOOLHUB_KEY_PASSWORD")
+                keyPassword = System.getenv("TOOLHUB_KEY_PASSWORD")?.takeIf { it.isNotBlank() }
                     ?: keystoreProps.getProperty("keyPassword")
             }
         }

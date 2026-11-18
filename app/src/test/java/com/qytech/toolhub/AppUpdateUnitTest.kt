@@ -24,7 +24,7 @@ class AppUpdateUnitTest {
             tagName = "v0.0.3",
             name = "Release v0.0.3",
             body = "Bug fixes",
-            htmlUrl = "https://github.com/Jax-Lifu/ToolHub/releases/tag/v0.0.3",
+            htmlUrl = "https://github.com/qytech/ToolHub/releases/tag/v0.0.3",
             assets = listOf(
                 GitHubAssetDto(name = "mapping.txt", size = 100L, browserDownloadUrl = "https://example.com/mapping.txt"),
                 GitHubAssetDto(name = "toolhub-release.apk", size = 2048000L, browserDownloadUrl = "https://example.com/toolhub-release.apk"),
