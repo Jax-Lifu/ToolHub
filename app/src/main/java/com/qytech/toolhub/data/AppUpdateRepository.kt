@@ -75,7 +75,7 @@ data class AppUpdateState(
 
 object AppUpdateRepository {
     private const val TAG = "AppUpdateRepository"
-    private const val GITEE_LATEST_RELEASE_API = "https://gitee.com/api/v5/repos/qytech/ToolHub/releases/latest"
+    private const val GITEE_LATEST_RELEASE_API = "https://gitee.com/api/v5/repos/jaxlifu/ToolHub/releases/latest"
     private const val GITHUB_LATEST_RELEASE_API = "https://api.github.com/repos/qytech/ToolHub/releases/latest"
     private const val ACTION_INSTALL_RESULT = "com.qytech.toolhub.ACTION_SELF_UPDATE_RESULT"
 
