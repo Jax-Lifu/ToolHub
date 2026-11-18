@@ -650,4 +650,23 @@
     <string name="update_current_ver_fmt">Current: v%s</string>
     <string name="update_latest_ver_fmt">Latest: v%s</string>
     <string name="update_no_apk">No APK asset found in this release</string>
+    <string name="fleet_dlg_title">Remote Fleet &amp; Tunnel</string>
+    <string name="tools_desc_fleet">SSH reverse tunnel &amp; Fleet dashboard heartbeat registration</string>
+    <string name="fleet_status_connected">Online</string>
+    <string name="fleet_status_connecting">Connecting</string>
+    <string name="fleet_status_error">Error</string>
+    <string name="fleet_status_disabled">Disabled</string>
+    <string name="fleet_enable_switch">Enable Remote Fleet &amp; SSH Tunnel</string>
+    <string name="fleet_server_url">Fleet Server URL</string>
+    <string name="fleet_device_token">Device Token</string>
+    <string name="fleet_ssh_host">SSH Relay Host</string>
+    <string name="fleet_ssh_port">Port</string>
+    <string name="fleet_ssh_user">SSH User</string>
+    <string name="fleet_web_port">Remote Web Port</string>
+    <string name="fleet_adb_port">Remote ADB Port</string>
+    <string name="fleet_pubkey_title">Device Ed25519 Public Key (add to server authorized_keys)</string>
+    <string name="fleet_copy_pubkey">Copy Public Key</string>
+    <string name="fleet_regen_key">Regenerate</string>
+    <string name="fleet_pubkey_regenerated">Regenerated device Ed25519 keypair</string>
+    <string name="fleet_save_apply">Save &amp; Apply</string>
 </resources>

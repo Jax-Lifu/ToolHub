@@ -1239,14 +1239,19 @@
         el._timer = setTimeout(() => { el.style.display = 'none'; }, 3200);
       }
 
+      const API_BASE = window.location.pathname.replace(/\/+$/, '');
+      function apiUrl(u) {
+        return (u.startsWith('/') && API_BASE) ? `${API_BASE}${u}` : u;
+      }
+
       async function apiGet(url) {
-        const res = await fetch(url, { cache: 'no-store' });
+        const res = await fetch(apiUrl(url), { cache: 'no-store' });
         return res.json();
       }
 
       async function apiPost(url, data) {
         const pinVal = (document.getElementById('web-pin-input')?.value || '').trim();
-        const res = await fetch(url, {
+        const res = await fetch(apiUrl(url), {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -1709,7 +1714,7 @@
               <td data-label="摘要">${badge}<span class="card-sub">${esc(r.summary)}</span></td>
               <td data-label="操作" style="white-space:nowrap;">
                 ${r.isZip ? '' : `<button type="button" class="btn sm" data-preview-report="${esc(r.fileName)}" data-loc="${esc(r.storageLocationLabel)}">在线打开</button>`}
-                <a class="btn sm primary" href="/download?file=${enc}" download>${r.isZip ? '⬇ 下载 ZIP' : '下载'}</a>
+                <a class="btn sm primary" href="${API_BASE}/download?file=${enc}" download>${r.isZip ? '⬇ 下载 ZIP' : '下载'}</a>
               </td>
             </tr>`;
           }).join('') : '<tr><td colspan="6" style="text-align:center;color:var(--muted);">暂无归档报告</td></tr>';
@@ -1722,7 +1727,7 @@
               <td data-label="信号" class="mono" style="color:var(--red);">${esc(t.signalText)}</td>
               <td data-label="操作" style="white-space:nowrap;">
                 <button type="button" class="btn sm" data-preview-tomb="${esc(t.fileName)}">堆栈</button>
-                <a class="btn sm primary" href="/tombstone/download?name=${enc}" download>下载</a>
+                <a class="btn sm primary" href="${API_BASE}/tombstone/download?name=${enc}" download>下载</a>
               </td>
             </tr>`;
           }).join('') : '<tr><td colspan="4" style="text-align:center;color:var(--muted);">未检测到 Native Tombstone</td></tr>';

@@ -24,6 +24,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.BugReport
+import androidx.compose.material.icons.filled.Cloud
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.GraphicEq
 import androidx.compose.material.icons.filled.Lan
@@ -61,7 +62,9 @@ import com.qytech.toolhub.data.AppUpdateRepository
 import com.qytech.toolhub.data.AppUpdateStatus
 import com.qytech.toolhub.data.AudioToneGenerator
 import com.qytech.toolhub.data.HardwareRepository
+import com.qytech.toolhub.data.RemoteFleetRepository
 import com.qytech.toolhub.data.StressTestRepository
+import com.qytech.toolhub.data.TunnelConnectionStatus
 import com.qytech.toolhub.data.WebReportServer
 import com.qytech.toolhub.ui.components.AotDialog
 import com.qytech.toolhub.ui.components.AppUpdateDialog
@@ -69,6 +72,7 @@ import com.qytech.toolhub.ui.components.AudioToneDialog
 import com.qytech.toolhub.ui.components.CrashDiagnosticsDialog
 import com.qytech.toolhub.ui.components.NetworkDiagnosticsDialog
 import com.qytech.toolhub.ui.components.QrCodeDialog
+import com.qytech.toolhub.ui.components.RemoteFleetDialog
 import com.qytech.toolhub.ui.components.ScreenTouchTestDialog
 import com.qytech.toolhub.ui.components.StatusPill
 import com.qytech.toolhub.ui.components.StressTestDialog
@@ -97,6 +101,7 @@ fun ToolsScreen(
     var showAudioToneDialog by remember { mutableStateOf(false) }
     var showQrCodeDialog by remember { mutableStateOf(false) }
     var showUpdateDialog by remember { mutableStateOf(false) }
+    var showFleetDialog by remember { mutableStateOf(false) }
 
     BoxWithConstraints(modifier = modifier.fillMaxSize()) {
         val cols = when {
@@ -264,6 +269,17 @@ fun ToolsScreen(
                         modifier = mod,
                     )
                 },
+                { mod ->
+                    ToolLaunchCard(
+                        title = stringResource(R.string.fleet_dlg_title),
+                        description = stringResource(R.string.tools_desc_fleet),
+                        icon = Icons.Default.Cloud,
+                        tint = MaterialTheme.colorScheme.tertiary,
+                        badge = { RemoteFleetBadge() },
+                        onClick = { showFleetDialog = true },
+                        modifier = mod,
+                    )
+                },
             )
 
             items.chunked(cols).forEach { rowItems ->
@@ -327,6 +343,12 @@ fun ToolsScreen(
     }
     if (showUpdateDialog) {
         AppUpdateDialog(onDismissRequest = { showUpdateDialog = false })
+    }
+    if (showFleetDialog) {
+        RemoteFleetDialog(
+            onShowMessage = onShowMessage,
+            onDismissRequest = { showFleetDialog = false },
+        )
     }
 }
 
@@ -440,4 +462,17 @@ private fun UpdateToolBadge() {
             compact = true,
         )
     }
+}
+
+@Composable
+private fun RemoteFleetBadge() {
+    val fleetState by RemoteFleetRepository.state.collectAsState()
+    val (label, color) = when (fleetState.tunnelStatus) {
+        TunnelConnectionStatus.CONNECTED -> stringResource(R.string.fleet_status_connected) to MaterialTheme.semanticColors.success
+        TunnelConnectionStatus.CONNECTING,
+        TunnelConnectionStatus.RECONNECTING -> stringResource(R.string.fleet_status_connecting) to MaterialTheme.semanticColors.warning
+        TunnelConnectionStatus.ERROR -> stringResource(R.string.fleet_status_error) to MaterialTheme.semanticColors.danger
+        TunnelConnectionStatus.DISABLED -> return
+    }
+    StatusPill(text = label, color = color, compact = true)
 }

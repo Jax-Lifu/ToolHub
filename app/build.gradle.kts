@@ -44,8 +44,8 @@ android {
         applicationId = "com.qytech.toolhub"
         minSdk = 31
         targetSdk = 37
-        versionCode = 10006
-        versionName = "0.0.6"
+        versionCode = 10007
+        versionName = "0.0.7"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -130,6 +130,7 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.zxing.core)
+    implementation(libs.jsch)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

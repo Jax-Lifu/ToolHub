@@ -649,4 +649,23 @@
     <string name="update_current_ver_fmt">現在のバージョン: v%s</string>
     <string name="update_latest_ver_fmt">最新バージョン: v%s</string>
     <string name="update_no_apk">このリリースに APK が見つかりません</string>
+    <string name="fleet_dlg_title">リモート管理センター</string>
+    <string name="tools_desc_fleet">SSH リバーストンネルと管理サーバーへのハートビート登録</string>
+    <string name="fleet_status_connected">オンライン</string>
+    <string name="fleet_status_connecting">接続中</string>
+    <string name="fleet_status_error">再試行中</string>
+    <string name="fleet_status_disabled">無効</string>
+    <string name="fleet_enable_switch">リモート管理と SSH トンネルを有効化</string>
+    <string name="fleet_server_url">管理サーバー URL (Fleet Server)</string>
+    <string name="fleet_device_token">デバイストークン (Device Token)</string>
+    <string name="fleet_ssh_host">SSH 中継ホスト</string>
+    <string name="fleet_ssh_port">ポート</string>
+    <string name="fleet_ssh_user">SSH ユーザー</string>
+    <string name="fleet_web_port">リモート Web ポート</string>
+    <string name="fleet_adb_port">リモート ADB ポート</string>
+    <string name="fleet_pubkey_title">端末 Ed25519 公開鍵 (サーバーの authorized_keys へ追加)</string>
+    <string name="fleet_copy_pubkey">公開鍵をコピー</string>
+    <string name="fleet_regen_key">鍵を再生成</string>
+    <string name="fleet_pubkey_regenerated">Ed25519 鍵ペアを再生成しました</string>
+    <string name="fleet_save_apply">保存して適用</string>
 </resources>

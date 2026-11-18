@@ -649,4 +649,23 @@
     <string name="update_current_ver_fmt">현재 버전: v%s</string>
     <string name="update_latest_ver_fmt">최신 버전: v%s</string>
     <string name="update_no_apk">이 릴리스에 APK 파일이 없습니다</string>
+    <string name="fleet_dlg_title">원격 관리 센터</string>
+    <string name="tools_desc_fleet">SSH 역방향 터널 및 관리 서버 하트비트 등록</string>
+    <string name="fleet_status_connected">연결됨</string>
+    <string name="fleet_status_connecting">연결 중</string>
+    <string name="fleet_status_error">재시도 중</string>
+    <string name="fleet_status_disabled">비활성</string>
+    <string name="fleet_enable_switch">원격 관리 및 SSH 터널 활성화</string>
+    <string name="fleet_server_url">관리 서버 주소 (Fleet Server URL)</string>
+    <string name="fleet_device_token">기기 토큰 (Device Token)</string>
+    <string name="fleet_ssh_host">SSH 릴레이 호스트</string>
+    <string name="fleet_ssh_port">포트</string>
+    <string name="fleet_ssh_user">SSH 사용자</string>
+    <string name="fleet_web_port">원격 Web 포트</string>
+    <string name="fleet_adb_port">원격 ADB 포트</string>
+    <string name="fleet_pubkey_title">기기 Ed25519 공개 키 (서버 authorized_keys에 추가)</string>
+    <string name="fleet_copy_pubkey">공개 키 복사</string>
+    <string name="fleet_regen_key">키 재생성</string>
+    <string name="fleet_pubkey_regenerated">Ed25519 키 쌍이 재생성되었습니다</string>
+    <string name="fleet_save_apply">저장 및 적용</string>
 </resources>

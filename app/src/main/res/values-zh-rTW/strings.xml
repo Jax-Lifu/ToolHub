@@ -649,4 +649,23 @@
     <string name="update_current_ver_fmt">目前版本: v%s</string>
     <string name="update_latest_ver_fmt">最新版本: v%s</string>
     <string name="update_no_apk">該 Release 未附帶 APK 安裝檔</string>
+    <string name="fleet_dlg_title">遠端管理中心</string>
+    <string name="tools_desc_fleet">SSH 反向隧道與管理後台心跳註冊（多裝置統一調度）</string>
+    <string name="fleet_status_connected">已連中轉</string>
+    <string name="fleet_status_connecting">連線中</string>
+    <string name="fleet_status_error">異常重試</string>
+    <string name="fleet_status_disabled">未啟用</string>
+    <string name="fleet_enable_switch">啟用遠端管理與 SSH 隧道</string>
+    <string name="fleet_server_url">管理後台位址 (Fleet Server URL)</string>
+    <string name="fleet_device_token">裝置上報權杖 (Device Token)</string>
+    <string name="fleet_ssh_host">SSH 中轉主機</string>
+    <string name="fleet_ssh_port">連接埠</string>
+    <string name="fleet_ssh_user">SSH 使用者名稱</string>
+    <string name="fleet_web_port">遠端 Web 連接埠</string>
+    <string name="fleet_adb_port">遠端 ADB 連接埠</string>
+    <string name="fleet_pubkey_title">本機 Ed25519 公鑰（新增至伺服器 authorized_keys）</string>
+    <string name="fleet_copy_pubkey">複製公鑰</string>
+    <string name="fleet_regen_key">重設金鑰</string>
+    <string name="fleet_pubkey_regenerated">已重新產生裝置 Ed25519 金鑰對</string>
+    <string name="fleet_save_apply">儲存並套用</string>
 </resources>

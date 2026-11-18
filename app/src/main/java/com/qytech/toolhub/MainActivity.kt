@@ -75,6 +75,7 @@ import androidx.navigation.compose.rememberNavController
 import com.qytech.toolhub.data.AotRepository
 import com.qytech.toolhub.data.AppLanguageManager
 import com.qytech.toolhub.data.AppUpdateRepository
+import com.qytech.toolhub.data.RemoteFleetRepository
 import com.qytech.toolhub.data.WebReportServer
 import com.qytech.toolhub.ui.theme.ToolHubTheme
 import kotlinx.coroutines.launch
@@ -121,6 +122,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WebReportServer.start(applicationContext)
+        RemoteFleetRepository.init(applicationContext)
         AotRepository.ensureSelfAotOptimized(applicationContext)
         AppUpdateRepository.checkForUpdate(applicationContext, silent = true)
         enableEdgeToEdge()
