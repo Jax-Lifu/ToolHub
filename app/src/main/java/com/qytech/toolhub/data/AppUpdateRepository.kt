@@ -75,7 +75,8 @@ data class AppUpdateState(
 
 object AppUpdateRepository {
     private const val TAG = "AppUpdateRepository"
-    private const val LATEST_RELEASE_API = "https://api.github.com/repos/qytech/ToolHub/releases/latest"
+    private const val GITEE_LATEST_RELEASE_API = "https://gitee.com/api/v5/repos/qytech/ToolHub/releases/latest"
+    private const val GITHUB_LATEST_RELEASE_API = "https://api.github.com/repos/qytech/ToolHub/releases/latest"
     private const val ACTION_INSTALL_RESULT = "com.qytech.toolhub.ACTION_SELF_UPDATE_RESULT"
 
     private val json = Json { ignoreUnknownKeys = true }
@@ -259,11 +260,25 @@ object AppUpdateRepository {
     }
 
     private fun fetchLatestRelease(): AppReleaseInfo {
-        val conn = (URL(LATEST_RELEASE_API).openConnection() as HttpURLConnection).apply {
+        val sources = listOf(GITEE_LATEST_RELEASE_API, GITHUB_LATEST_RELEASE_API)
+        var lastError: Throwable? = null
+        for (apiUrl in sources) {
+            val res = runCatching { fetchReleaseFromUrl(apiUrl) }
+            val info = res.getOrNull()
+            if (info != null && !info.apkUrl.isNullOrBlank()) {
+                return info
+            }
+            lastError = res.exceptionOrNull() ?: lastError
+        }
+        throw (lastError ?: IllegalStateException("No release source available"))
+    }
+
+    private fun fetchReleaseFromUrl(apiUrl: String): AppReleaseInfo {
+        val conn = (URL(apiUrl).openConnection() as HttpURLConnection).apply {
             requestMethod = "GET"
-            connectTimeout = 10_000
-            readTimeout = 10_000
-            setRequestProperty("Accept", "application/vnd.github+json")
+            connectTimeout = 6_000
+            readTimeout = 8_000
+            setRequestProperty("Accept", "application/json")
             setRequestProperty("User-Agent", "ToolHub-Android/${BuildConfig.VERSION_NAME}")
         }
         try {
