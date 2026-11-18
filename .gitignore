@@ -7,7 +7,15 @@
 /captures
 .externalNativeBuild
 .cxx
-app/build/
+apps/android/build/
+apps/web/dist/
+node_modules/
+target/
+fleet_devices.json
+fleet_users.json
+fleet_audit.jsonl
+fleet_history/
+.fleet_secret
 *.jks
 *.keystore
 *.p12

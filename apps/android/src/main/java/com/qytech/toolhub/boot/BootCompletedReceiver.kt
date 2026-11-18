@@ -5,6 +5,8 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import com.qytech.toolhub.data.OtgRepository
+import com.qytech.toolhub.data.WebReportServer
+import com.qytech.toolhub.service.FleetKeepAliveService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -32,6 +34,10 @@ class BootCompletedReceiver : BroadcastReceiver() {
                     TAG,
                     "Boot defaults applied (success=${record.success}): nodes=${record.nodeSummaries}, adb=${record.adbSummary}",
                 )
+                if (action != Intent.ACTION_LOCKED_BOOT_COMPLETED) {
+                    WebReportServer.start(appContext)
+                    FleetKeepAliveService.startIfEnabled(appContext)
+                }
             } catch (t: Throwable) {
                 Log.e(TAG, "Failed applying boot defaults on $action", t)
             } finally {

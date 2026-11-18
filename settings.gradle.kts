@@ -24,3 +24,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "ToolHub"
 include(":app")
+project(":app").projectDir = file("apps/android")

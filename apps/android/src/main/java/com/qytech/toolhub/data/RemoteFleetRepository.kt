@@ -26,6 +26,8 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.io.File
+import java.net.DatagramPacket
+import java.net.DatagramSocket
 import java.net.HttpURLConnection
 import java.net.NetworkInterface
 import java.net.URL
@@ -96,12 +98,16 @@ object RemoteFleetRepository {
 
     private const val PRIV_KEY_NAME = "remote_fleet_ed25519"
     private const val PUB_KEY_NAME = "remote_fleet_ed25519.pub"
+    private const val LAN_DISCOVERY_PORT = 18088
+    private const val DISCOVERY_MAGIC = "TOOLHUB_DISCOVER"
 
     private val json = Json { ignoreUnknownKeys = true }
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     private var tunnelJob: Job? = null
+    private var wsTunnelJob: Job? = null
     private var heartbeatJob: Job? = null
+    private var discoveryJob: Job? = null
     @Volatile
     private var activeSession: Session? = null
     @Volatile
@@ -120,10 +126,13 @@ object RemoteFleetRepository {
 
         val prefs = appCtx.createDeviceProtectedStorageContext()
             .getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val hasBuildDefault = BuildConfig.DEFAULT_FLEET_URL.isNotBlank()
         val cfg = RemoteFleetConfig(
-            enabled = prefs.getBoolean(KEY_ENABLED, false),
-            fleetServerUrl = prefs.getString(KEY_SERVER_URL, "") ?: "",
-            deviceToken = prefs.getString(KEY_DEVICE_TOKEN, "") ?: "",
+            enabled = if (prefs.contains(KEY_ENABLED)) prefs.getBoolean(KEY_ENABLED, false) else hasBuildDefault,
+            fleetServerUrl = prefs.getString(KEY_SERVER_URL, null)
+                ?.takeIf { it.isNotBlank() } ?: BuildConfig.DEFAULT_FLEET_URL,
+            deviceToken = prefs.getString(KEY_DEVICE_TOKEN, null)
+                ?.takeIf { it.isNotBlank() } ?: BuildConfig.DEFAULT_DEVICE_TOKEN,
             sshHost = prefs.getString(KEY_SSH_HOST, "") ?: "",
             sshPort = prefs.getInt(KEY_SSH_PORT, 22),
             sshUser = prefs.getString(KEY_SSH_USER, "toolhub-relay") ?: "toolhub-relay",
@@ -143,6 +152,7 @@ object RemoteFleetRepository {
         }
 
         registerNetworkCallback(appCtx)
+        startLanDiscoveryResponder(appCtx)
         if (cfg.enabled) {
             startWorkers(appCtx)
         }
@@ -218,29 +228,77 @@ object RemoteFleetRepository {
 
     private fun startWorkers(appCtx: Context) {
         val cfg = _state.value.config
+        if (cfg.fleetServerUrl.isNotBlank()) {
+            wsTunnelJob = scope.launch { runWsTunnelLoop(appCtx) }
+            heartbeatJob = scope.launch { runHeartbeatLoop(appCtx) }
+        }
         if (cfg.sshHost.isNotBlank()) {
             tunnelJob = scope.launch { runTunnelLoop(appCtx) }
-        } else {
-            _state.update {
-                it.copy(
-                    tunnelStatus = TunnelConnectionStatus.DISABLED,
-                    statusMessage = "SSH host empty",
-                )
-            }
-        }
-
-        if (cfg.fleetServerUrl.isNotBlank()) {
-            heartbeatJob = scope.launch { runHeartbeatLoop(appCtx) }
         }
     }
 
     private fun stopWorkers() {
         tunnelJob?.cancel()
         tunnelJob = null
+        wsTunnelJob?.cancel()
+        wsTunnelJob = null
         heartbeatJob?.cancel()
         heartbeatJob = null
         runCatching { activeSession?.disconnect() }
         activeSession = null
+    }
+
+    private suspend fun runWsTunnelLoop(appCtx: Context) {
+        var backoffMs = 3_000L
+        while (scope.isActive && _state.value.config.enabled) {
+            val cfg = _state.value.config
+            if (cfg.fleetServerUrl.isBlank()) break
+            if (_state.value.tunnelStatus != TunnelConnectionStatus.CONNECTED) {
+                _state.update {
+                    it.copy(
+                        tunnelStatus = if (backoffMs == 3_000L) TunnelConnectionStatus.CONNECTING else TunnelConnectionStatus.RECONNECTING,
+                        statusMessage = "WS -> ${cfg.fleetServerUrl}",
+                    )
+                }
+            }
+
+            val result = runCatching {
+                WsReverseTunnelClient.runSession(
+                    serverHttpOrWsUrl = cfg.fleetServerUrl,
+                    deviceToken = cfg.deviceToken,
+                    scope = scope,
+                    buildHeartbeatJson = { json.encodeToString(buildPayload(appCtx, _state.value.config)) },
+                    localWebPortProvider = { WebReportServer.state.value.port },
+                    onConnected = {
+                        backoffMs = 3_000L
+                        _state.update {
+                            it.copy(
+                                tunnelStatus = TunnelConnectionStatus.CONNECTED,
+                                lastHeartbeatOk = true,
+                                lastHeartbeatTimeMillis = System.currentTimeMillis(),
+                                statusMessage = "WS 隧道已连接",
+                            )
+                        }
+                    },
+                )
+            }
+
+            if (!scope.isActive || !_state.value.config.enabled) break
+            val err = result.exceptionOrNull()
+            if (err != null) {
+                Log.w(TAG, "WS tunnel disconnected: ${err.message}")
+                if (activeSession == null) {
+                    _state.update {
+                        it.copy(
+                            tunnelStatus = TunnelConnectionStatus.ERROR,
+                            statusMessage = err.message ?: "WS disconnected",
+                        )
+                    }
+                }
+            }
+            delay(backoffMs)
+            backoffMs = (backoffMs * 2).coerceAtMost(30_000L)
+        }
     }
 
     private suspend fun runTunnelLoop(appCtx: Context) {
@@ -320,14 +378,47 @@ object RemoteFleetRepository {
         }
     }
 
-    private fun sendHeartbeat(appCtx: Context, cfg: RemoteFleetConfig): Boolean {
+    private fun startLanDiscoveryResponder(appCtx: Context) {
+        if (discoveryJob?.isActive == true) return
+        discoveryJob = scope.launch {
+            while (scope.isActive) {
+                runCatching {
+                    DatagramSocket(LAN_DISCOVERY_PORT).use { socket ->
+                        socket.broadcast = true
+                        val buf = ByteArray(512)
+                        while (scope.isActive) {
+                            val packet = DatagramPacket(buf, buf.size)
+                            socket.receive(packet)
+                            val msg = String(packet.data, 0, packet.length, Charsets.UTF_8).trim()
+                            if (msg.startsWith(DISCOVERY_MAGIC)) {
+                                val payload = buildPayload(appCtx, _state.value.config)
+                                val replyBytes = json.encodeToString(payload).toByteArray(Charsets.UTF_8)
+                                val reply = DatagramPacket(
+                                    replyBytes,
+                                    replyBytes.size,
+                                    packet.address,
+                                    packet.port,
+                                )
+                                socket.send(reply)
+                            }
+                        }
+                    }
+                }.onFailure { err ->
+                    Log.w(TAG, "LAN discovery responder error: ${err.message}")
+                }
+                delay(5_000L)
+            }
+        }
+    }
+
+    private fun buildPayload(appCtx: Context, cfg: RemoteFleetConfig): FleetHeartbeatPayload {
         val basic = DeviceInfoRepository.readBasicInfo(context = appCtx)
         val lanIp = NetworkDiagnosticsRepository.getActiveIpv4Address()?.takeIf { it.isNotBlank() } ?: "-"
         val thermalSample = TelemetryRepository.readThermalSample()
         val uptimeMs = SystemClock.elapsedRealtime()
         val uptimeStr = "${uptimeMs / 3_600_000}h ${(uptimeMs % 3_600_000) / 60_000}m"
 
-        val payload = FleetHeartbeatPayload(
+        return FleetHeartbeatPayload(
             mac = _state.value.deviceMac,
             serial = _state.value.deviceSerial,
             model = basic.model,
@@ -346,6 +437,10 @@ object RemoteFleetRepository {
             socTempC = thermalSample.socCelsius,
             uptime = uptimeStr,
         )
+    }
+
+    private fun sendHeartbeat(appCtx: Context, cfg: RemoteFleetConfig): Boolean {
+        val payload = buildPayload(appCtx, cfg)
 
         val url = URL("${cfg.fleetServerUrl}/api/devices/heartbeat")
         val conn = (url.openConnection() as HttpURLConnection).apply {

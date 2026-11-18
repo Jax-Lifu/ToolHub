@@ -39,7 +39,8 @@
         android:label="@string/app_name"
         android:localeConfig="@xml/locales_config"
         android:supportsRtl="true"
-        android:theme="@style/Theme.ToolHub">
+        android:theme="@style/Theme.ToolHub"
+        android:usesCleartextTraffic="true">
 
         <activity
             android:name=".MainActivity"
@@ -73,6 +74,15 @@
             <property
                 android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
                 android:value="hardware_stress_test_and_bugreport" />
+        </service>
+
+        <service
+            android:name=".service.FleetKeepAliveService"
+            android:exported="false"
+            android:foregroundServiceType="specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="remote_fleet_tunnel_and_web_console" />
         </service>
     </application>
 

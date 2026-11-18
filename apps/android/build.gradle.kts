@@ -52,6 +52,15 @@ android {
         ndk {
             abiFilters += listOf("arm64-v8a", "armeabi-v7a")
         }
+
+        val defaultFleetUrl = (System.getenv("TOOLHUB_FLEET_URL")?.takeIf { it.isNotBlank() }
+            ?: keystoreProps.getProperty("fleetUrl")?.takeIf { it.isNotBlank() }
+            ?: "").replace("\"", "\\\"")
+        val defaultDeviceToken = (System.getenv("TOOLHUB_DEVICE_TOKEN")?.takeIf { it.isNotBlank() }
+            ?: keystoreProps.getProperty("fleetToken")?.takeIf { it.isNotBlank() }
+            ?: "").replace("\"", "\\\"")
+        buildConfigField("String", "DEFAULT_FLEET_URL", "\"$defaultFleetUrl\"")
+        buildConfigField("String", "DEFAULT_DEVICE_TOKEN", "\"$defaultDeviceToken\"")
     }
 
     buildTypes {

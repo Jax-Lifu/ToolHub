@@ -77,6 +77,7 @@ import com.qytech.toolhub.data.AppLanguageManager
 import com.qytech.toolhub.data.AppUpdateRepository
 import com.qytech.toolhub.data.RemoteFleetRepository
 import com.qytech.toolhub.data.WebReportServer
+import com.qytech.toolhub.service.FleetKeepAliveService
 import com.qytech.toolhub.ui.theme.ToolHubTheme
 import kotlinx.coroutines.launch
 
@@ -123,6 +124,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         WebReportServer.start(applicationContext)
         RemoteFleetRepository.init(applicationContext)
+        FleetKeepAliveService.startIfEnabled(applicationContext)
         AotRepository.ensureSelfAotOptimized(applicationContext)
         AppUpdateRepository.checkForUpdate(applicationContext, silent = true)
         enableEdgeToEdge()

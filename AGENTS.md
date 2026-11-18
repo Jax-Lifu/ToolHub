@@ -6,12 +6,20 @@
 
 - **应用名称 / 包名**: `ToolHub` / `com.qytech.toolhub`
 - **定位**: 面向嵌入式 Android 设备的系统级硬件调试、实时遥测监控、诊断与压测工具。
-- **架构模式**: 单模块 Android 应用（`:app`），采用 Jetpack Compose + Material 3 + ViewModel + 单例 Repository（`object *Repository`）架构。
+## 架构模式（MonoRepo）
+
+- `apps/android/`: 原生 Android 调试客户端（Gradle `:app` 模块，Jetpack Compose + Material 3 + ViewModel + `object *Repository`，通过根目录 `settings.gradle.kts` 映射）。
+- `apps/web/`: Vite + React 19 + Tailwind v4 + shadcn/ui 车队运维工作台。
+- `apps/server/`: Rust Axum (`toolhub-fleet`) 服务端，提供 WebSocket 反向隧道、多账号 RBAC、历史遥测与审计日志持久化，由根目录 `Cargo.toml` Workspace 管理。
 - **系统级特性**: `AndroidManifest.xml` 声明了 `android:sharedUserId="android.uid.system"` 及特权权限，用于直接读写 sysfs 节点、系统属性（`SystemPropertiesHelper`）、执行原生压测二进制、获取 `Bugreport` 与控制开发者选项。
 
 ## 常用命令
 
 ```bash
+# 运行前端构建 / Rust 服务端校验
+npm run build:web
+cargo check -p toolhub-fleet
+
 # 运行 JVM 单元测试（修改逻辑或数据模型后优先验证）
 ./gradlew testDebugUnitTest
 
@@ -60,6 +68,7 @@
    - `app/src/main/baseline-prof.txt` 定义了应用专属 Baseline Profile 热点规则，`gradle.properties` 已开启 `org.gradle.configuration-cache=true`。
 4. **版本发布规范**:
    - 每次上传发布到 GitHub 时，必须在 `app/build.gradle.kts` 中将 `versionCode` 与 `versionName` 补丁号同步 `+1`（例如 `10002` / `0.0.2` -> `10003` / `0.0.3`），并创建与推送对应的 annotated tag（`v<versionName>`，附带清晰的发布说明）触发 GitHub Actions 自动发布 Release。
+   - **打 tag 与执行 `git push` 发布前，必须先经过用户明确确认，禁止未经确认直接打 tag 或推送。**
 4. **序列化与 Web API**:
    - `WebApiModels.kt` 使用 `kotlinx.serialization`。修改接口数据结构时注意保持字段兼容性，避免破坏 `app/src/main/assets/web_console.html` 的前端解析。
 5. **单元测试**:
