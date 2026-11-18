@@ -31,6 +31,7 @@ import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.QrCode2
 import androidx.compose.material.icons.filled.SettingsSuggest
 import androidx.compose.material.icons.filled.Speed
+import androidx.compose.material.icons.filled.SystemUpdate
 import androidx.compose.material.icons.filled.TouchApp
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -56,11 +57,14 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.qytech.toolhub.data.AppUpdateRepository
+import com.qytech.toolhub.data.AppUpdateStatus
 import com.qytech.toolhub.data.AudioToneGenerator
 import com.qytech.toolhub.data.HardwareRepository
 import com.qytech.toolhub.data.StressTestRepository
 import com.qytech.toolhub.data.WebReportServer
 import com.qytech.toolhub.ui.components.AotDialog
+import com.qytech.toolhub.ui.components.AppUpdateDialog
 import com.qytech.toolhub.ui.components.AudioToneDialog
 import com.qytech.toolhub.ui.components.CrashDiagnosticsDialog
 import com.qytech.toolhub.ui.components.NetworkDiagnosticsDialog
@@ -92,6 +96,7 @@ fun ToolsScreen(
     var showWebServerDialog by remember { mutableStateOf(false) }
     var showAudioToneDialog by remember { mutableStateOf(false) }
     var showQrCodeDialog by remember { mutableStateOf(false) }
+    var showUpdateDialog by remember { mutableStateOf(false) }
 
     BoxWithConstraints(modifier = modifier.fillMaxSize()) {
         val cols = when {
@@ -248,6 +253,17 @@ fun ToolsScreen(
                         modifier = mod,
                     )
                 },
+                { mod ->
+                    ToolLaunchCard(
+                        title = stringResource(R.string.update_title),
+                        description = stringResource(R.string.tools_desc_update),
+                        icon = Icons.Default.SystemUpdate,
+                        tint = MaterialTheme.colorScheme.primary,
+                        badge = { UpdateToolBadge() },
+                        onClick = { showUpdateDialog = true },
+                        modifier = mod,
+                    )
+                },
             )
 
             items.chunked(cols).forEach { rowItems ->
@@ -308,6 +324,9 @@ fun ToolsScreen(
             hint = stringResource(R.string.home_qr_hint),
             onDismissRequest = { showQrCodeDialog = false },
         )
+    }
+    if (showUpdateDialog) {
+        AppUpdateDialog(onDismissRequest = { showUpdateDialog = false })
     }
 }
 
@@ -403,4 +422,22 @@ private fun AudioToneBadge() {
         color = MaterialTheme.colorScheme.tertiary,
         compact = true,
     )
+}
+
+@Composable
+private fun UpdateToolBadge() {
+    val updateState by AppUpdateRepository.state.collectAsState()
+    if (updateState.status == AppUpdateStatus.UPDATE_AVAILABLE && updateState.latestRelease != null) {
+        StatusPill(
+            text = "NEW v${updateState.latestRelease?.versionName}",
+            color = MaterialTheme.semanticColors.warning,
+            compact = true,
+        )
+    } else {
+        StatusPill(
+            text = "v${updateState.currentVersion}",
+            color = MaterialTheme.colorScheme.primary,
+            compact = true,
+        )
+    }
 }

@@ -635,4 +635,18 @@
     <string name="tools_desc_web">LAN HTTP コンソールと PIN ロック設定</string>
     <string name="tools_desc_audio">正弦波・スイープ・ホワイトノイズテスト信号生成</string>
     <string name="tools_desc_qr">ワイヤレス ADB 接続用 QR コードを生成</string>
+    <string name="update_title">アップデート確認</string>
+    <string name="tools_desc_update">GitHub Release から最新版を確認・自動インストール</string>
+    <string name="update_check_btn">更新を確認</string>
+    <string name="update_checking">GitHub Release を確認中…</string>
+    <string name="update_up_to_date">最新バージョンです</string>
+    <string name="update_new_found_fmt">新しいバージョン v%s が利用可能です</string>
+    <string name="update_download_install">ダウンロードして更新</string>
+    <string name="update_downloading_fmt">APK をダウンロード中 %d%%</string>
+    <string name="update_installing">アップデートをインストール中…</string>
+    <string name="update_failed_fmt">更新に失敗しました: %s</string>
+    <string name="update_release_notes">リリースノート</string>
+    <string name="update_current_ver_fmt">現在のバージョン: v%s</string>
+    <string name="update_latest_ver_fmt">最新バージョン: v%s</string>
+    <string name="update_no_apk">このリリースに APK が見つかりません</string>
 </resources>

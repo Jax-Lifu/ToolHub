@@ -74,6 +74,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.qytech.toolhub.data.AotRepository
 import com.qytech.toolhub.data.AppLanguageManager
+import com.qytech.toolhub.data.AppUpdateRepository
 import com.qytech.toolhub.data.WebReportServer
 import com.qytech.toolhub.ui.theme.ToolHubTheme
 import kotlinx.coroutines.launch
@@ -121,6 +122,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         WebReportServer.start(applicationContext)
         AotRepository.ensureSelfAotOptimized(applicationContext)
+        AppUpdateRepository.checkForUpdate(applicationContext, silent = true)
         enableEdgeToEdge()
         setContent {
             ToolHubTheme {

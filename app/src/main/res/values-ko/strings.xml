@@ -635,4 +635,18 @@
     <string name="tools_desc_web">LAN HTTP 콘솔 상태 및 PIN 잠금 설정</string>
     <string name="tools_desc_audio">사인파/스윕/화이트 노이즈 테스트 신호 생성기</string>
     <string name="tools_desc_qr">무선 ADB 연결용 QR 코드 생성</string>
+    <string name="update_title">업데이트 확인</string>
+    <string name="tools_desc_update">GitHub Release에서 최신 버전 확인 및 자동 설치</string>
+    <string name="update_check_btn">지금 확인</string>
+    <string name="update_checking">GitHub Release 확인 중…</string>
+    <string name="update_up_to_date">현재 최신 버전입니다</string>
+    <string name="update_new_found_fmt">새 버전 v%s 사용 가능</string>
+    <string name="update_download_install">다운로드 및 설치</string>
+    <string name="update_downloading_fmt">APK 다운로드 중 %d%%</string>
+    <string name="update_installing">업데이트 설치 중…</string>
+    <string name="update_failed_fmt">업데이트 실패: %s</string>
+    <string name="update_release_notes">릴리스 노트</string>
+    <string name="update_current_ver_fmt">현재 버전: v%s</string>
+    <string name="update_latest_ver_fmt">최신 버전: v%s</string>
+    <string name="update_no_apk">이 릴리스에 APK 파일이 없습니다</string>
 </resources>

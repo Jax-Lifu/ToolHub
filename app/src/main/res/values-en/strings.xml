@@ -636,4 +636,18 @@
     <string name="tools_desc_web">LAN HTTP console status &amp; PIN lock settings</string>
     <string name="tools_desc_audio">Sine/sweep/white-noise digital test tone generator</string>
     <string name="tools_desc_qr">Generate wireless ADB connection QR code</string>
+    <string name="update_title">Check Update</string>
+    <string name="tools_desc_update">Check &amp; install latest ToolHub from GitHub Releases</string>
+    <string name="update_check_btn">Check Now</string>
+    <string name="update_checking">Checking GitHub Releases…</string>
+    <string name="update_up_to_date">Already on the latest version</string>
+    <string name="update_new_found_fmt">New version v%s available</string>
+    <string name="update_download_install">Download &amp; Install</string>
+    <string name="update_downloading_fmt">Downloading APK %d%%</string>
+    <string name="update_installing">Installing update…</string>
+    <string name="update_failed_fmt">Update failed: %s</string>
+    <string name="update_release_notes">Release Notes</string>
+    <string name="update_current_ver_fmt">Current: v%s</string>
+    <string name="update_latest_ver_fmt">Latest: v%s</string>
+    <string name="update_no_apk">No APK asset found in this release</string>
 </resources>
