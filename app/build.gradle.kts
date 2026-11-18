@@ -19,8 +19,8 @@ android {
 
     signingConfigs {
         getByName("debug") {
-            val ksPath = System.getenv("TOOLHUB_KEYSTORE_FILE")
-                ?: keystoreProps.getProperty("storeFile")
+            val ksPath = System.getenv("TOOLHUB_KEYSTORE_FILE")?.takeIf { it.isNotBlank() }
+                ?: keystoreProps.getProperty("storeFile")?.takeIf { it.isNotBlank() }
             val ksFile = ksPath?.let { rootProject.file(it) }
             if (ksFile != null && ksFile.exists()) {
                 storeFile = ksFile
