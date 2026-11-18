@@ -122,7 +122,7 @@ jobs:
           TAG="${GITHUB_REF_NAME}"
           APK_FILE=$(ls -1 app/build/outputs/apk/release/*.apk | head -n1)
           BODY=$(cat release_notes.md)
-          PAYLOAD=$(python3 -c 'import json,os; print(json.dumps({"access_token": os.environ["GITEE_TOKEN"], "tag_name": os.environ["TAG"], "name": f"ToolHub {os.environ[\"TAG\"]}", "body": os.environ["BODY"], "prerelease": False, "target_commitish": "main"}))' TAG="$TAG" BODY="$BODY")
+          PAYLOAD=$(TAG="$TAG" BODY="$BODY" python3 -c 'import json,os; print(json.dumps({"access_token": os.environ["GITEE_TOKEN"], "tag_name": os.environ["TAG"], "name": "ToolHub " + os.environ["TAG"], "body": os.environ["BODY"], "prerelease": False, "target_commitish": "main"}))')
           RESP=$(curl -sS -X POST "https://gitee.com/api/v5/repos/${GITEE_REPO}/releases" \
             -H "Content-Type: application/json" \
             -d "$PAYLOAD")
