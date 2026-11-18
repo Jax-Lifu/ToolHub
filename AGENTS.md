@@ -58,6 +58,8 @@
    - 签名配置通过根目录 `keystore.properties`（已 gitignore）或 `TOOLHUB_KEYSTORE_*` 环境变量读取，严禁将 `*.jks` 或明文口令提交到公开仓库。
    - `jniLibs.useLegacyPackaging = true` 与 `abiFilters += listOf("arm64-v8a", "armeabi-v7a")` 用于保证原生可执行文件 `libstressapptest.so` 可被正确解压并执行，请勿破坏此配置。
    - `app/src/main/baseline-prof.txt` 定义了应用专属 Baseline Profile 热点规则，`gradle.properties` 已开启 `org.gradle.configuration-cache=true`。
+4. **版本发布规范**:
+   - 每次上传发布到 GitHub 时，必须在 `app/build.gradle.kts` 中将 `versionCode` 与 `versionName` 补丁号同步 `+1`（例如 `10002` / `0.0.2` -> `10003` / `0.0.3`），并创建与推送对应的 annotated tag（`v<versionName>`，附带清晰的发布说明）触发 GitHub Actions 自动发布 Release。
 4. **序列化与 Web API**:
    - `WebApiModels.kt` 使用 `kotlinx.serialization`。修改接口数据结构时注意保持字段兼容性，避免破坏 `app/src/main/assets/web_console.html` 的前端解析。
 5. **单元测试**:
